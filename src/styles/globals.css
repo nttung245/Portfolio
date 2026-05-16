@@ -1,0 +1,23 @@
+@keyframes music-title-marquee {
+  0%,
+  16% {
+    transform: translateX(0);
+  }
+
+  84%,
+  100% {
+    transform: translateX(calc(var(--music-title-distance) * -1));
+  }
+}
+
+.music-title-marquee {
+  width: max-content;
+  min-width: 100%;
+  animation: music-title-marquee var(--music-title-duration, 6s) ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.music-title-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
