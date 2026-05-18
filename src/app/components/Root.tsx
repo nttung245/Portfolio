@@ -37,7 +37,7 @@ export function Root() {
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute inset-x-0 top-0 h-14 border-b border-zinc-200/80 bg-white/70 backdrop-blur-xl dark:border-zinc-800/90 dark:bg-[#09090b]/78" />
         <div
-          className="absolute inset-0 opacity-60 dark:opacity-45"
+          className="absolute inset-0 opacity-80 dark:opacity-65"
           style={{
             backgroundImage: "radial-gradient(var(--dot-color) 1px, transparent 1px)",
             backgroundSize: "18px 18px",

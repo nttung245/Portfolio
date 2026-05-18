@@ -84,6 +84,9 @@ export function MusicPlayer() {
   const [isStopping, setIsStopping] = useState(false);
   const [playbackError, setPlaybackError] = useState(false);
   const [effectKey, setEffectKey] = useState(0);
+  const [isDark, setIsDark] = useState(() =>
+    typeof window !== "undefined" && document.documentElement.classList.contains("dark"),
+  );
   const [titleMotion, setTitleMotion] = useState({
     isOverflowing: false,
     distance: 0,
@@ -99,8 +102,12 @@ export function MusicPlayer() {
   const hasTracks = tracks.length > 0;
   const title = current?.title ?? "No music";
   const avatarGradient = current?.avatar
-    ? `linear-gradient(90deg, rgba(24,24,27,0.9), rgba(24,24,27,0.18)), url(${current.avatar})`
-    : "linear-gradient(90deg, #18181b, #52525b)";
+    ? isDark
+      ? `linear-gradient(90deg, rgba(24,24,27,0.9), rgba(24,24,27,0.18)), url(${current.avatar})`
+      : `linear-gradient(90deg, rgba(255,255,255,0.85), rgba(255,255,255,0.15)), url(${current.avatar})`
+    : isDark
+      ? "linear-gradient(90deg, #18181b, #52525b)"
+      : "linear-gradient(90deg, #e4e4e7, #a1a1aa)";
 
   function cancelAudioFade() {
     fadeTokenRef.current += 1;
@@ -160,6 +167,14 @@ export function MusicPlayer() {
       audio.removeAttribute("src");
       audio.load();
     };
+  }, []);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -306,14 +321,14 @@ export function MusicPlayer() {
       />
 
       <div
-        className="group relative flex h-9 w-44 shrink-0 overflow-hidden rounded-md border border-zinc-200 bg-zinc-950 text-white shadow-[0_1px_0_rgba(24,24,27,0.04)] transition-colors dark:border-zinc-700 dark:bg-zinc-950 sm:w-64"
+        className="group relative flex h-9 w-44 shrink-0 overflow-hidden rounded-md border border-zinc-300 bg-white text-zinc-900 shadow-[0_1px_0_rgba(24,24,27,0.04)] transition-colors dark:border-zinc-700 dark:bg-zinc-950 dark:text-white sm:w-64"
         aria-label={hasTracks ? `${isPlaying ? "Playing" : "Ready"} ${title}` : "No music found"}
       >
         <span
           className="absolute inset-0 bg-cover bg-center opacity-35 transition-opacity group-hover:opacity-45"
           style={{ backgroundImage: avatarGradient }}
         />
-        <span className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/58 to-black/72" />
+        <span className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/50 to-white/65 dark:from-black/85 dark:via-black/58 dark:to-black/72" />
 
         <AnimatePresence>
           {(isPlaying || isStopping) && (
@@ -340,12 +355,12 @@ export function MusicPlayer() {
             disabled={!hasTracks}
             title={isPlaying ? `Stop ${title}` : `Play ${title}`}
             aria-label={isPlaying ? `Stop ${title}` : `Play ${title}`}
-            className="grid h-7 w-7 shrink-0 place-items-center rounded border border-white/15 bg-white/10 text-white transition-colors hover:bg-white/18 disabled:cursor-not-allowed disabled:opacity-50"
+            className="grid h-7 w-7 shrink-0 place-items-center rounded border border-zinc-900/15 bg-zinc-900/10 text-zinc-900 transition-colors hover:bg-zinc-900/18 dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/18 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPlaying ? <Square size={12} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
           </button>
 
-          <span className="grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded border border-white/15 bg-white/10">
+          <span className="grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded border border-zinc-900/15 bg-zinc-900/10 dark:border-white/15 dark:bg-white/10">
             {current?.avatar ? (
               <img src={current.avatar} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -378,7 +393,7 @@ export function MusicPlayer() {
               </span>
             </span>
 
-            <span className="relative mt-0.5 flex h-3 items-center gap-0.5 overflow-hidden rounded bg-white/10 px-1">
+            <span className="relative mt-0.5 flex h-3 items-center gap-0.5 overflow-hidden rounded bg-zinc-900/10 px-1 dark:bg-white/10">
               <motion.span
                 className="absolute inset-0 origin-left bg-cover bg-center"
                 style={{ backgroundImage: avatarGradient }}
@@ -388,14 +403,16 @@ export function MusicPlayer() {
                 }}
                 transition={{ duration: isPlaying ? 0.45 : 0.34, ease: "easeOut" }}
               />
-              <span className="absolute inset-0 bg-gradient-to-r from-white/15 via-white/5 to-transparent" />
+              <span className="absolute inset-0 bg-gradient-to-r from-zinc-900/15 via-zinc-900/5 to-transparent dark:from-white/15 dark:via-white/5 dark:to-transparent" />
               {bars.map((bar) => (
                 <motion.span
                   key={bar}
-                  className="relative z-10 w-1 rounded-full bg-white"
+                  className="relative z-10 w-1 rounded-full bg-zinc-900 dark:bg-white"
                   style={{
                     backgroundImage: current?.avatar
-                      ? `linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.48)), url(${current.avatar})`
+                      ? isDark
+                        ? `linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.48)), url(${current.avatar})`
+                        : `linear-gradient(180deg, rgba(24,24,27,0.96), rgba(24,24,27,0.48)), url(${current.avatar})`
                       : undefined,
                     backgroundPosition: `${bar * 9}% center`,
                     backgroundSize: "72px 28px",
@@ -431,7 +448,7 @@ export function MusicPlayer() {
             disabled={!hasTracks}
             title="Change song"
             aria-label="Change song"
-            className="grid h-7 w-7 shrink-0 place-items-center rounded border border-white/15 bg-white/10 text-white transition-colors hover:bg-white/18 disabled:cursor-not-allowed disabled:opacity-50"
+            className="grid h-7 w-7 shrink-0 place-items-center rounded border border-zinc-900/15 bg-zinc-900/10 text-zinc-900 transition-colors hover:bg-zinc-900/18 dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:bg-white/18 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <SkipForward size={14} />
           </button>
