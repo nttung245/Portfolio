@@ -36,13 +36,7 @@ export function Root() {
 
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute inset-x-0 top-0 h-14 border-b border-zinc-200/80 bg-white/70 backdrop-blur-xl dark:border-zinc-800/90 dark:bg-[#09090b]/78" />
-        <div
-          className="absolute inset-0 opacity-80 dark:opacity-65"
-          style={{
-            backgroundImage: "radial-gradient(var(--dot-color) 1px, transparent 1px)",
-            backgroundSize: "18px 18px",
-          }}
-        />
+        <div className="telegram-doodle-pattern absolute inset-0 opacity-38 dark:opacity-32" />
         <div className="absolute inset-y-0 left-[calc(50%-40rem)] hidden w-px bg-zinc-200/80 dark:bg-zinc-800/80 xl:block" />
         <div className="absolute inset-y-0 right-[calc(50%-40rem)] hidden w-px bg-zinc-200/80 dark:bg-zinc-800/80 xl:block" />
       </div>

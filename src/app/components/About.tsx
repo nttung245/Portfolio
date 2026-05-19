@@ -154,14 +154,9 @@ export function About() {
   return (
     <div className="bg-[#faf9f5] transition-colors dark:bg-[#09090b]">
       <motion.section variants={stagger} initial="hidden" animate="show">
-        <div
-          className="flex min-h-[15rem] items-center justify-center border-b border-zinc-200 bg-white/35 px-6 py-12 dark:border-zinc-800 dark:bg-zinc-950/35"
-          style={{
-            backgroundImage: "radial-gradient(var(--dot-color) 1px, transparent 1px)",
-            backgroundSize: "18px 18px",
-          }}
-        >
-          <motion.div variants={fadeUp}>
+        <div className="relative flex min-h-[15rem] items-center justify-center overflow-hidden border-b border-zinc-200 bg-white/35 px-6 py-12 dark:border-zinc-800 dark:bg-zinc-950/35">
+          <div className="telegram-doodle-pattern absolute inset-0 opacity-28 dark:opacity-24" />
+          <motion.div className="relative z-10" variants={fadeUp}>
             <PixelHeroMark />
           </motion.div>
         </div>

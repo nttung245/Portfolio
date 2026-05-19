@@ -39,7 +39,9 @@
   --sidebar-accent-foreground: #18181b;
   --sidebar-border: #e4e4e7;
   --sidebar-ring: #a1a1aa;
-  --dot-color: rgba(92, 72, 48, 0.18);
+  --doodle-color: rgba(39, 39, 42, 0.2);
+  --telegram-pattern-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='156' height='156' viewBox='0 0 156 156'%3E%3Cg fill='none' stroke='black' stroke-width='1.55' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 18h28a5 5 0 0 1 5 5v19a5 5 0 0 1-5 5H14a5 5 0 0 1-5-5V23a5 5 0 0 1 5-5z'/%3E%3Cpath d='M18 29l6 5-6 5M29 39h10'/%3E%3Cpath d='M88 18 75 31l13 13M111 18l13 13-13 13M103 15l-9 32'/%3E%3Cpath d='M24 77h24M24 77c0-8 4-13 12-13M48 77c0 15-10 18-22 18'/%3E%3Ccircle cx='24' cy='77' r='3'/%3E%3Ccircle cx='48' cy='77' r='3'/%3E%3Ccircle cx='26' cy='95' r='3'/%3E%3Cpath d='M94 70c0 4-9 7-20 7s-20-3-20-7 9-7 20-7 20 3 20 7zM54 70v24c0 4 9 7 20 7s20-3 20-7V70M54 82c0 4 9 7 20 7s20-3 20-7'/%3E%3Cpath d='M121 72l22 47-18-9-8 18-7-3 8-18-18-5z'/%3E%3Cpath d='M19 121h24v20H19zM25 116v5M36 116v5M25 141v5M36 141v5M14 127h5M14 136h5M43 127h5M43 136h5'/%3E%3Cpath d='M107 126h31M107 136h20M103 116h39a5 5 0 0 1 5 5v22a5 5 0 0 1-5 5h-39a5 5 0 0 1-5-5v-22a5 5 0 0 1 5-5z'/%3E%3Cpath d='M132 51h12M138 45v12M66 31h8M70 27v8M121 18h3M33 56h4M79 124h4M134 89h4'/%3E%3C/g%3E%3Cg fill='black'%3E%3Ccircle cx='67' cy='59' r='1.8'/%3E%3Ccircle cx='122' cy='62' r='1.6'/%3E%3Ccircle cx='67' cy='118' r='1.5'/%3E%3Ccircle cx='144' cy='23' r='1.5'/%3E%3C/g%3E%3C/svg%3E");
+  --telegram-pattern-size: 128px 128px;
   --stripe-color: rgba(92, 72, 48, 0.055);
 }
 
@@ -80,7 +82,7 @@
   --sidebar-accent-foreground: #f4f4f5;
   --sidebar-border: #27272a;
   --sidebar-ring: #71717a;
-  --dot-color: rgba(244, 244, 245, 0.18);
+  --doodle-color: rgba(244, 244, 245, 0.16);
   --stripe-color: rgba(244, 244, 245, 0.055);
 }
 
@@ -172,14 +174,32 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    opacity: 0.75;
-    background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
-    background-size: 18px 18px;
-    mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
+    opacity: 0.3;
+    background-color: var(--doodle-color);
+    -webkit-mask-image: var(--telegram-pattern-mask);
+    mask-image: var(--telegram-pattern-mask);
+    -webkit-mask-position: 18px 12px;
+    mask-position: 18px 12px;
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    -webkit-mask-size: var(--telegram-pattern-size);
+    mask-size: var(--telegram-pattern-size);
   }
 
   .dark body::before {
-    opacity: 0.62;
+    opacity: 0.34;
+  }
+
+  .telegram-doodle-pattern {
+    background-color: var(--doodle-color);
+    -webkit-mask-image: var(--telegram-pattern-mask);
+    mask-image: var(--telegram-pattern-mask);
+    -webkit-mask-position: 18px 12px;
+    mask-position: 18px 12px;
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    -webkit-mask-size: var(--telegram-pattern-size);
+    mask-size: var(--telegram-pattern-size);
   }
 
   #root {
