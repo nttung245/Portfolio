@@ -1,4 +1,37 @@
 import { Github, Linkedin, Mail, MapPin, MessageCircle, Send } from "lucide-react";
+import type { FormEvent } from "react";
+
+const contactEmail = "nguyenthanhtung020405@gmail.com";
+
+function openEmailDraft(event: FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const fields = new FormData(form);
+  const name = String(fields.get("name") ?? "").trim();
+  const email = String(fields.get("email") ?? "").trim();
+  const message = String(fields.get("message") ?? "").trim();
+
+  if (!message) {
+    const messageField = form.elements.namedItem("message") as HTMLTextAreaElement;
+    messageField.setCustomValidity("Please enter a message.");
+    messageField.reportValidity();
+    return;
+  }
+
+  const gmail = fields.get("provider") === "gmail";
+  const composeUrl = new URL(gmail
+    ? "https://mail.google.com/mail/"
+    : "https://outlook.live.com/mail/0/deeplink/compose");
+
+  if (gmail) {
+    composeUrl.searchParams.set("view", "cm");
+    composeUrl.searchParams.set("fs", "1");
+  }
+  composeUrl.searchParams.set("to", contactEmail);
+  composeUrl.searchParams.set(gmail ? "su" : "subject", `Portfolio inquiry from ${name}`);
+  composeUrl.searchParams.set("body", `${message}\n\nName: ${name}\nContact email: ${email}`);
+  window.location.assign(composeUrl.toString());
+}
 
 const socialLinks = [
   { icon: Github, label: "GitHub", value: "https://github.com/nttung245", href: "https://github.com/nttung245" },
@@ -74,29 +107,57 @@ export function Contact() {
 
         <form
           className="px-5 py-8 md:px-8 md:py-10"
+          onSubmit={openEmailDraft}
         >
           <Label index="03" text="message" />
           <div className="grid gap-3 sm:grid-cols-2">
             <input
+              name="name"
+              autoComplete="name"
+              aria-label="Your name"
+              required
               className="h-11 rounded-md border border-zinc-200 bg-white px-3 text-[13px] text-zinc-950 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
               placeholder="your name"
             />
             <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              aria-label="Your email"
+              required
               className="h-11 rounded-md border border-zinc-200 bg-white px-3 text-[13px] text-zinc-950 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600"
               placeholder="your email"
             />
             <textarea
+              name="message"
+              aria-label="Your message"
+              required
+              onInput={(event) => event.currentTarget.setCustomValidity("")}
               rows={6}
               className="min-h-36 resize-none rounded-md border border-zinc-200 bg-white p-3 text-[13px] text-zinc-950 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:placeholder:text-zinc-600 dark:focus:border-zinc-600 sm:col-span-2"
               placeholder="write something concise..."
             />
           </div>
+          <label className="mt-4 flex items-center justify-between gap-3 text-[12px] text-zinc-600 dark:text-zinc-400">
+            Send with
+            <select
+              name="provider"
+              defaultValue="gmail"
+              className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-[13px] text-zinc-950 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50"
+            >
+              <option value="gmail">Gmail</option>
+              <option value="outlook">Outlook</option>
+            </select>
+          </label>
           <button
-            type="button"
+            type="submit"
             className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-zinc-950 px-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-950 dark:hover:bg-zinc-300"
           >
             <Send size={14} /> Send
           </button>
+          <p className="mt-3 text-[11px] leading-6 text-zinc-500 dark:text-zinc-400">
+            Opens a prefilled draft in your chosen email service. Review and send it there.
+          </p>
         </form>
       </section>
 
