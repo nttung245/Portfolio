@@ -1,251 +1,50 @@
-@custom-variant dark (&:is(.dark *));
+@theme {
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Ink and Accent are set per Poster (and on the Frame); Sky follows the scroll. */
+@theme inline {
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --color-sky: var(--sky);
+}
 
 :root {
-  --font-size: 16px;
-  --background: #faf9f5;
-  --foreground: #18181b;
-  --card: #ffffff;
-  --card-foreground: #18181b;
-  --popover: #ffffff;
-  --popover-foreground: #18181b;
-  --primary: #18181b;
-  --primary-foreground: #ffffff;
-  --secondary: #f1eee7;
-  --secondary-foreground: #18181b;
-  --muted: #f3f0e8;
-  --muted-foreground: #71717a;
-  --accent: #18181b;
-  --accent-foreground: #ffffff;
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
-  --border: #e4e4e7;
-  --input: #d4d4d8;
-  --input-background: #ffffff;
-  --switch-background: #d4d4d8;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --ring: rgba(24, 24, 27, 0.24);
-  --chart-1: #18181b;
-  --chart-2: #52525b;
-  --chart-3: #71717a;
-  --chart-4: #a1a1aa;
-  --chart-5: #d4d4d8;
-  --radius: 0.5rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #18181b;
-  --sidebar-primary: #18181b;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f4f4f5;
-  --sidebar-accent-foreground: #18181b;
-  --sidebar-border: #e4e4e7;
-  --sidebar-ring: #a1a1aa;
-  --doodle-color: rgba(39, 39, 42, 0.2);
-  --telegram-pattern-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='156' height='156' viewBox='0 0 156 156'%3E%3Cg fill='none' stroke='black' stroke-width='1.55' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 18h28a5 5 0 0 1 5 5v19a5 5 0 0 1-5 5H14a5 5 0 0 1-5-5V23a5 5 0 0 1 5-5z'/%3E%3Cpath d='M18 29l6 5-6 5M29 39h10'/%3E%3Cpath d='M88 18 75 31l13 13M111 18l13 13-13 13M103 15l-9 32'/%3E%3Cpath d='M24 77h24M24 77c0-8 4-13 12-13M48 77c0 15-10 18-22 18'/%3E%3Ccircle cx='24' cy='77' r='3'/%3E%3Ccircle cx='48' cy='77' r='3'/%3E%3Ccircle cx='26' cy='95' r='3'/%3E%3Cpath d='M94 70c0 4-9 7-20 7s-20-3-20-7 9-7 20-7 20 3 20 7zM54 70v24c0 4 9 7 20 7s20-3 20-7V70M54 82c0 4 9 7 20 7s20-3 20-7'/%3E%3Cpath d='M121 72l22 47-18-9-8 18-7-3 8-18-18-5z'/%3E%3Cpath d='M19 121h24v20H19zM25 116v5M36 116v5M25 141v5M36 141v5M14 127h5M14 136h5M43 127h5M43 136h5'/%3E%3Cpath d='M107 126h31M107 136h20M103 116h39a5 5 0 0 1 5 5v22a5 5 0 0 1-5 5h-39a5 5 0 0 1-5-5v-22a5 5 0 0 1 5-5z'/%3E%3Cpath d='M132 51h12M138 45v12M66 31h8M70 27v8M121 18h3M33 56h4M79 124h4M134 89h4'/%3E%3C/g%3E%3Cg fill='black'%3E%3Ccircle cx='67' cy='59' r='1.8'/%3E%3Ccircle cx='122' cy='62' r='1.6'/%3E%3Ccircle cx='67' cy='118' r='1.5'/%3E%3Ccircle cx='144' cy='23' r='1.5'/%3E%3C/g%3E%3C/svg%3E");
-  --telegram-pattern-size: 128px 128px;
-  --stripe-color: rgba(92, 72, 48, 0.055);
-}
-
-.dark {
-  --background: #09090b;
-  --foreground: #f4f4f5;
-  --card: #111113;
-  --card-foreground: #f4f4f5;
-  --popover: #111113;
-  --popover-foreground: #f4f4f5;
-  --primary: #f4f4f5;
-  --primary-foreground: #09090b;
-  --secondary: #18181b;
-  --secondary-foreground: #f4f4f5;
-  --muted: #18181b;
-  --muted-foreground: #a1a1aa;
-  --accent: #f4f4f5;
-  --accent-foreground: #09090b;
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
-  --border: #27272a;
-  --input: #3f3f46;
-  --input-background: #111113;
-  --switch-background: #3f3f46;
-  --ring: rgba(244, 244, 245, 0.24);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
-  --chart-1: #f4f4f5;
-  --chart-2: #d4d4d8;
-  --chart-3: #a1a1aa;
-  --chart-4: #71717a;
-  --chart-5: #52525b;
-  --sidebar: #111113;
-  --sidebar-foreground: #f4f4f5;
-  --sidebar-primary: #f4f4f5;
-  --sidebar-primary-foreground: #09090b;
-  --sidebar-accent: #18181b;
-  --sidebar-accent-foreground: #f4f4f5;
-  --sidebar-border: #27272a;
-  --sidebar-ring: #71717a;
-  --doodle-color: rgba(244, 244, 245, 0.16);
-  --stripe-color: rgba(244, 244, 245, 0.055);
-}
-
-@theme inline {
-  --font-sans: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --font-display: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --animate-scan: scan 2s ease-in-out infinite;
-
-  @keyframes scan {
-    0% { transform: translateY(-100%); opacity: 0; }
-    50% { opacity: 1; }
-    100% { transform: translateY(500%); opacity: 0; }
-  }
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-switch-background: var(--switch-background);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  /* Dawn, until the scroll handler in DayPage takes over. */
+  --sky: #141833;
+  --ink: #e9e6f2;
+  --accent: #f4a6b4;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-
   html {
-    font-size: var(--font-size);
+    background: #0f1428;
     scroll-behavior: smooth;
-    scroll-padding-top: 6.5rem;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
     margin: 0;
     min-width: 320px;
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    background:
-      linear-gradient(90deg, rgba(24,24,27,0.045) 1px, transparent 1px),
-      linear-gradient(180deg, rgba(24,24,27,0.04) 1px, transparent 1px),
-      #faf9f5;
-    background-size: 96px 96px;
+    font-family: var(--font-mono);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  .dark body {
-    background:
-      linear-gradient(90deg, rgba(244,244,245,0.045) 1px, transparent 1px),
-      linear-gradient(180deg, rgba(244,244,245,0.04) 1px, transparent 1px),
-      #09090b;
+  ::selection {
+    background: var(--ink);
+    color: var(--sky);
   }
 
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.3;
-    background-color: var(--doodle-color);
-    -webkit-mask-image: var(--telegram-pattern-mask);
-    mask-image: var(--telegram-pattern-mask);
-    -webkit-mask-position: 18px 12px;
-    mask-position: 18px 12px;
-    -webkit-mask-repeat: repeat;
-    mask-repeat: repeat;
-    -webkit-mask-size: var(--telegram-pattern-size);
-    mask-size: var(--telegram-pattern-size);
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
   }
+}
 
-  .dark body::before {
-    opacity: 0.34;
-  }
-
-  .telegram-doodle-pattern {
-    background-color: var(--doodle-color);
-    -webkit-mask-image: var(--telegram-pattern-mask);
-    mask-image: var(--telegram-pattern-mask);
-    -webkit-mask-position: 18px 12px;
-    mask-position: 18px 12px;
-    -webkit-mask-repeat: repeat;
-    mask-repeat: repeat;
-    -webkit-mask-size: var(--telegram-pattern-size);
-    mask-size: var(--telegram-pattern-size);
-  }
-
-  #root {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  p {
-    margin: 0;
-  }
-
-  h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h2 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
-  }
-
-  h4,
-  label,
-  button,
-  input,
-  textarea {
-    font-size: var(--text-base);
-    line-height: 1.5;
-  }
-
-  button,
-  input,
-  textarea {
-    font-family: inherit;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
