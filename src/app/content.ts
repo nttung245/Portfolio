@@ -10,9 +10,9 @@ export const profile = {
 
 export const roles = ["Full-stack", "AI engineer"];
 
-export const bio = [
-  "Full-stack and AI engineer focused on clean architecture, readable systems, and interfaces that feel direct rather than decorated.",
-  "Currently exploring better product systems, AI integrations, and pragmatic ways to ship polished ideas faster.",
+export const objective = [
+  "IT major focused on software engineering and applied AI. Experienced in building reliable services, integrating APIs, and automating workflows with LLMs.",
+  "Comfortable with system design, data flows, and deployment practices. Seeking software or AI engineering roles where I can deliver production-ready features and measurable impact.",
 ];
 
 export const headlineStat = {

@@ -40,6 +40,10 @@ _Avoid_: navbar, header
 The time of day shown in the Frame, which advances from Dawn to Twilight as the visitor scrolls.
 _Avoid_: timer, local time
 
+**Topic**:
+The resume-style name for what a Poster holds (Profile, Objective, Experience, Skills, Education, Contact), shown in the Timeline and at the top of the Poster.
+_Avoid_: section name, title
+
 **Timeline**:
-The row of six Time slots in the Frame; choosing one jumps to its Poster.
+The row of six Topics in the Frame, one per Time slot; choosing one jumps to its Poster.
 _Avoid_: nav links, menu

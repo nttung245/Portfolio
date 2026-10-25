@@ -19,7 +19,7 @@ export function Poster({ slot, className = "", style, children }: PosterProps) {
       id={slot.id}
       aria-label={slot.label}
       data-live={live ? "" : undefined}
-      className={`poster relative flex min-h-svh flex-col overflow-x-clip px-4 pb-28 pt-20 text-ink sm:px-8 ${className}`}
+      className={`poster relative isolate flex min-h-svh flex-col overflow-x-clip px-4 pb-28 pt-20 text-ink sm:px-8 ${className}`}
       style={{ "--ink": slot.ink, "--accent": slot.accent, ...style } as CSSProperties}
     >
       {children}
@@ -29,13 +29,13 @@ export function Poster({ slot, className = "", style, children }: PosterProps) {
 
 type PosterHeadProps = {
   slot: TimeSlot;
-  title: string;
+  title?: string;
   heading?: boolean;
 };
 
-// The micro-type row at the top of every Poster: the Time slot on the left, the topic on the right.
+// The micro-type row at the top of every Poster: the Time slot on the left, its Topic on the right.
 // The time itself lives in the Frame's Day clock.
-export function PosterHead({ slot, title, heading = true }: PosterHeadProps) {
+export function PosterHead({ slot, title = slot.topic, heading = true }: PosterHeadProps) {
   const Title = heading ? "h2" : "p";
 
   return (
