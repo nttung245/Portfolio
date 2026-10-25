@@ -1,0 +1,108 @@
+export const profile = {
+  name: "Tung Nguyen",
+  role: "Applied AI Engineer",
+  location: "Ho Chi Minh City, Vietnam",
+  coordinates: "10.8°N 106.7°E",
+  email: "nguyenthanhtung020405@gmail.com",
+  github: "https://github.com/nttung245",
+  linkedin: "https://www.linkedin.com/in/nttung245/",
+};
+
+export const roles = ["Full-stack", "AI engineer"];
+
+export const bio = [
+  "Full-stack and AI engineer focused on clean architecture, readable systems, and interfaces that feel direct rather than decorated.",
+  "Currently exploring better product systems, AI integrations, and pragmatic ways to ship polished ideas faster.",
+];
+
+export const headlineStat = {
+  value: 48,
+  caption:
+    "Roughly this share of Hilab's daily business orders is now automated by the AI design-personalization pipeline I built and deployed.",
+};
+
+export type Experience = {
+  company: string;
+  role: string;
+  period: string;
+  highlights: string[];
+  more: string[];
+  tech: string[];
+};
+
+export const experiences: Experience[] = [
+  {
+    company: "Hilab Technology",
+    role: "AI Engineer",
+    period: "May 2026 – Present",
+    highlights: [
+      "Built and deployed an AI-powered design personalization pipeline automating approximately 48% of daily business orders, covering order ingestion, source resolution, personalization, AI editing, QA, and final design upload.",
+      "Engineered asynchronous batch processing and production reliability with FastAPI, Celery, Redis, PostgreSQL, and Docker, including scheduling, retries, recovery, audit trails, and actionable failure classification.",
+      "Developing a multi-tenant enterprise knowledge and BI platform that unifies warehouse data, internal documents, and knowledge graphs into a conversational interface with traceable sources. This platform is in development.",
+    ],
+    more: [
+      "Evaluated self-hosted image AI approaches including Qwen-Image-Layered, SAM2, LaMa, and diffusion/LoRA across VRAM constraints, latency, layer separation, mask fidelity, and text preservation; findings informed a hybrid local/cloud architecture.",
+      "Developed hybrid image-editing workflows using Gemini/OpenAI, deterministic typography, OCR/CV, region detection, and mask-based compositing, with human review for uncertain outputs.",
+      "Contributed to governed routing across semantic metrics, graph traversal, document retrieval, and grounded LLM synthesis, alongside document ingestion, belief memory, tenant isolation, and evaluation.",
+      "Working across a distributed Go/Python/Next.js stack backed by PostgreSQL, ClickHouse, FalkorDB, Elasticsearch, and Redis.",
+    ],
+    tech: ["Python", "FastAPI", "Celery", "Redis", "PostgreSQL", "Docker", "Gemini/OpenAI", "Go", "Next.js", "ClickHouse", "FalkorDB", "Elasticsearch"],
+  },
+  {
+    company: "IEC Research Group",
+    role: "AI Researcher",
+    period: "2024 – Present",
+    highlights: [
+      "Architected a multi-LLM orchestration layer supporting Google Gemini, Groq, and MetaClaw proxy with LangChain.",
+      "Reduced AI hallucination risk by implementing an auth contamination prevention system.",
+      "Contributed to small-scale multi-agent research projects using AutoGen, Flowise, and CrewAI.",
+    ],
+    more: [
+      "Explored Airflow and MLflow for ResNet50 model experimentation and workflow management.",
+      "Collaborated with a professor to propose new ideas and improve ongoing research projects.",
+    ],
+    tech: ["MetaClaw", "Docker", "LlamaIndex", "LangChain", "FastAPI", "ChromaDB"],
+  },
+];
+
+export const skillGroups = [
+  { name: "Languages", items: ["Python", "TypeScript", "JavaScript", "Go", "Rust", "SQL", "Bash", "C++"] },
+  { name: "AI · LLM", items: ["LangChain", "LlamaIndex", "Gemini / OpenAI", "AutoGen", "CrewAI", "ChromaDB"] },
+  { name: "Web", items: ["React", "Next.js", "Node.js", "Express", "FastAPI", "Celery", "gRPC", "Vite", "Tailwind"] },
+  { name: "Data", items: ["PostgreSQL", "Redis", "ClickHouse", "Elasticsearch", "FalkorDB"] },
+  { name: "Infra", items: ["Docker", "Docker Compose", "Airflow", "MLflow", "Grafana", "GitHub Actions", "Jenkins", "AWS", "GCP", "System design"] },
+];
+
+export const education = {
+  school: "VNU-HCM University of Information Technology",
+  short: "UIT",
+  degree: "Computer Network and Data Communication",
+  period: "2023 – 2027",
+  gpa: "3.5 / 4",
+};
+
+export const certifications = [
+  { name: "Machine Learning in Production", ring: "Machine Learning in Production · 2026", year: "2026" },
+  { name: "AWS Cloud Technical Essentials", ring: "AWS Cloud Technical Essentials · 2025", year: "2025" },
+  { name: "IBM AI Engineering with Python, PyTorch & TensorFlow", ring: "IBM AI Engineering · 2024", year: "2024" },
+  { name: "IELTS 6.5", ring: "IELTS 6.5", year: "2023 – 2025" },
+];
+
+function composeUrl(base: string, params: Record<string, string>) {
+  const url = new URL(base);
+  Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+  return url.toString();
+}
+
+const subject = "Portfolio inquiry";
+
+export const composeLinks = [
+  {
+    label: "Gmail",
+    href: composeUrl("https://mail.google.com/mail/", { view: "cm", fs: "1", to: profile.email, su: subject }),
+  },
+  {
+    label: "Outlook",
+    href: composeUrl("https://outlook.live.com/mail/0/deeplink/compose", { to: profile.email, subject }),
+  },
+];
