@@ -40,7 +40,7 @@ const stars: Array<[x: number, y: number, r: number, delay: number]> = [
 export function TwilightPoster() {
   return (
     <Poster slot={slot}>
-      <PosterHead slot={slot} title="Contact" />
+      <PosterHead slot={slot} />
 
       <svg aria-hidden="true" viewBox="0 0 1000 560" className="motif mt-8 w-full max-w-3xl self-end overflow-visible">
         {constellation.map((points) => (

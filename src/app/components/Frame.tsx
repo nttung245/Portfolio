@@ -55,17 +55,12 @@ export function Frame({ active, clock, progress }: FrameProps) {
                   href={`#${item.id}`}
                   onClick={jumpTo(item.id)}
                   aria-current={isActive ? "step" : undefined}
-                  className={`flex flex-col gap-1 transition-opacity duration-300 ${
+                  className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] transition-opacity duration-300 ${
                     isActive ? "opacity-100" : "opacity-45 hover:opacity-80"
                   }`}
                 >
-                  <span className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em]">
-                    <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-accent" : "bg-ink/40"}`} />
-                    {item.label}
-                  </span>
-                  <span className="pl-3.5 text-[10px] tabular-nums tracking-[0.04em] opacity-70">
-                    {item.time} · {item.vn}
-                  </span>
+                  <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-accent" : "bg-ink/40"}`} />
+                  {item.topic}
                 </a>
               </li>
             );
@@ -73,16 +68,14 @@ export function Frame({ active, clock, progress }: FrameProps) {
         </ol>
 
         <div className="mt-2 flex items-center justify-between md:hidden">
-          <p className="text-[10px] uppercase tracking-[0.2em]">
-            {slot.label} <span className="normal-case tracking-[0.04em] opacity-70">· {slot.vn}</span>
-          </p>
+          <p className="text-[10px] uppercase tracking-[0.2em]">{slot.topic}</p>
           <ol className="-mr-1.5 flex items-center">
             {timeSlots.map((item, index) => (
               <li key={item.id}>
                 <a
                   href={`#${item.id}`}
                   onClick={jumpTo(item.id)}
-                  aria-label={item.label}
+                  aria-label={item.topic}
                   aria-current={index === active ? "step" : undefined}
                   className="flex h-7 w-7 items-center justify-center"
                 >
