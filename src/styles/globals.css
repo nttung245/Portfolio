@@ -354,6 +354,41 @@
   animation: ticker 48s linear infinite;
 }
 
+/* Afternoon: nightfall. One registered --split drives both the night render's clip and the
+   terminator line; its initial value keeps the static frame split down the middle. */
+@property --split {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 50%;
+}
+
+@keyframes nightfall {
+  0%,
+  12% {
+    --split: 100%;
+  }
+  42%,
+  62% {
+    --split: 0%;
+  }
+  92%,
+  100% {
+    --split: 100%;
+  }
+}
+
+.nightfall {
+  animation: nightfall 10s ease-in-out var(--nightfall-delay, 0s) infinite;
+}
+
+.nightfall-night {
+  clip-path: inset(0 0 0 var(--split, 50%));
+}
+
+.nightfall-line {
+  left: var(--split, 50%);
+}
+
 /* Sunset: a still long shadow; the motion comes from the decode and the glitch. */
 .sunset-word {
   text-shadow: var(--long-shadow-sm);

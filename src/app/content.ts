@@ -65,6 +65,58 @@ export const experiences: Experience[] = [
   },
 ];
 
+export type PlaygroundWorld = {
+  name: string;
+  blurb: string;
+  facts: string[];
+  /** The world running live: Agent Arena's embed mode on the GitHub Pages deploy of my fork. */
+  live: string;
+  day: string;
+  night: string;
+  dayAlt: string;
+  nightAlt: string;
+};
+
+const arena = "https://nttung245.github.io/agent-arena/";
+
+export const playground = {
+  intro:
+    "Worlds I built for Agent Arena, an open-source playground where LLM agents live on a 3D map and chat. Each one is a single map file on a CC0 model kit I adapted, with its own light, props, and named places the agents can talk about. Both run live below: drag to look around.",
+  project: { label: "Agent Arena", href: "https://github.com/nttung245/agent-arena" },
+  craft:
+    "Baked glow maps into the models so jack-o'-lanterns and the greenhouse light up at night, and gave each kit one shared scale so modular pieces keep their true proportions.",
+  credits: [
+    "Three.js · React Three Fiber · glTF",
+    "Worlds: Kenney Graveyard and Space kits (CC0)",
+    "Characters: J-Toastie · vulture: Poly by Google (CC BY 3.0)",
+  ],
+};
+
+export const playgroundWorlds: PlaygroundWorld[] = [
+  {
+    name: "Halloween",
+    blurb:
+      "A haunted hollow: an iron-fenced graveyard and mausoleum, a pumpkin patch of jack-o'-lanterns, and a cauldron on a campfire, with a ghost, a skeleton, a zombie and a vampire on the loose.",
+    facts: ["135 props", "19 lights", "5 places"],
+    live: `${arena}?embed&map=halloween&time=cycle`,
+    day: new URL("../../playground/halloween-day.webp", import.meta.url).href,
+    night: new URL("../../playground/halloween-night.webp", import.meta.url).href,
+    dayAlt: "The Halloween world by day: a graveyard with a mausoleum, a pumpkin patch and crooked pines under a dusky purple sky.",
+    nightAlt: "The Halloween world at night: jack-o'-lanterns, lanterns, fire baskets and a ghost glowing in the dark.",
+  },
+  {
+    name: "Mars",
+    blurb:
+      "A red-planet base: hab and greenhouse domes, a rocket on its launch pad, a solar field and impact craters, with astronauts at work and something small and green by the biggest crater.",
+    facts: ["77 props", "11 lights", "5 places"],
+    live: `${arena}?embed&map=red_planet&time=cycle`,
+    day: new URL("../../playground/mars-day.webp", import.meta.url).href,
+    night: new URL("../../playground/mars-night.webp", import.meta.url).href,
+    dayAlt: "The Mars world by day: white domes, a rocket beside its gantry, solar panels and craters on rust-red ground.",
+    nightAlt: "The Mars world at night: the greenhouse dome glowing pink, blue beacons around the floodlit rocket pad.",
+  },
+];
+
 export const skillGroups = [
   { name: "Languages", items: ["Python", "TypeScript", "JavaScript", "Go", "Rust", "SQL", "Bash", "C++"] },
   { name: "AI · LLM", items: ["LangChain", "LlamaIndex", "Gemini / OpenAI", "AutoGen", "CrewAI", "ChromaDB"] },

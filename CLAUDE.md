@@ -14,14 +14,14 @@ If `bun run dev` exits with `ENOSPC`, the machine has run out of inotify watcher
 
 ## Design language
 
-The site is "A Day in Type": six kinetic-type Posters that run from Dawn to Twilight as the visitor scrolls, after Sara Benoist's Olympic Series posters, with Midday borrowing from Mat Voyce's PUMA "Forever Faster" sequence. `GLOSSARY.md` defines the vocabulary (Poster, Motif, Time slot, Topic, Sky, Ink, Accent, Frame, Day clock, Timeline); use those words in code and conversation. `docs/adr/` records decisions that are easy to undo by accident: Posters loop on their own instead of scroll-jacking, and the day cycle replaces a light/dark toggle.
+The site is "A Day in Type": seven kinetic-type Posters that run from Dawn to Twilight as the visitor scrolls, after Sara Benoist's Olympic Series posters, with Midday borrowing from Mat Voyce's PUMA "Forever Faster" sequence. `GLOSSARY.md` defines the vocabulary (Poster, Motif, Time slot, Topic, Sky, Ink, Accent, Frame, Day clock, Timeline); use those words in code and conversation. `docs/adr/` records decisions that are easy to undo by accident: Posters loop on their own instead of scroll-jacking, and the day cycle replaces a light/dark toggle.
 
 ## Architecture
 
 **One page.** `routes.tsx` has a single `Root` layout, which only adds `MotionConfig reducedMotion="user"`, with `DayPage` as its index route. Paths from older versions of the site (`/about`, `/experience`, `/contact`, …) redirect to the matching Poster's hash, and old hashes (`#about`, `#experience`, …) are mapped through `legacyHashes` in `day.ts`. Unknown paths go to `/`. `vercel.json` rewrites every path to `index.html`.
 
 **Data lives in two files.**
-- `src/app/day.ts`: the six Time slots in order, each with its id, English and Vietnamese labels, Topic, time, and Sky/Ink/Accent colours.
+- `src/app/day.ts`: the seven Time slots in order, each with its id, English and Vietnamese labels, Topic, time, and Sky/Ink/Accent colours. The Frame's Poster count (N°04/07) and Timeline columns follow its length.
 - `src/app/content.ts`: all portfolio text, including profile and contact links, bio, experience, skills, education and certifications. Edit copy there, not in the Posters.
 
 **`DayPage` owns scrolling.** Its `useDayScroll` hook measures each Poster's top and, on every scroll:
@@ -37,7 +37,8 @@ It also scrolls to the URL hash on load, and again once the web fonts have reflo
 - Dawn types the name in, and Sunset decodes its words through random glyphs. Both then loop a cyberpunk glitch: `.glitch` copies the text from `data-text` into tinted, sliced pseudo-elements (`--glitch-a`/`--glitch-b`) while `StaticNoise` flashes scanlines and grain.
 - Sunrise plays once, then rests. Motion variants on one `whileInView` parent run it in order: horizon, sun, glow, roles, objective. Only the glow keeps breathing.
 - Midday follows PUMA "Forever Faster": italic Archivo, a paper-grain overlay, a counter that steps on twos, an impact burst when it lands, and company names that slam in.
+- Afternoon (Playground) runs nightfall: a terminator line sweeps each world from its day render to its night one and back. One registered `--split` property drives both the night image's clip and the line, and its 50% initial value is the static frame. The worlds then run live on top: each frame mounts Agent Arena's embed mode (`live` in `content.ts`, served by GitHub Pages from the `nttung245/agent-arena` fork) and fades it in when the iframe posts `agent-arena:ready`. On desktop a world loads as it nears the screen; on touch screens and under reduced motion it waits for a tap, and on touch screens an overlay keeps the page scrolling instead of turning the camera.
 - Dawn and Dusk scatter `StarField` stars. Dusk ends in an afterglow and a generated city skyline drawn in Twilight's Sky colour, so it runs straight into the next Poster.
 - `random.ts` seeds the stars and city lights so they stay put between renders.
 
-**Assets.** `SunrisePoster.tsx` imports `my_picture/my_avatar.jpg` with `new URL(…, import.meta.url)`. `music/`, `portfolio-assets/`, `abdul-reference.html` and the CV PDF in `my_picture/` stay in the repo but the site does not use them.
+**Assets.** `SunrisePoster.tsx` imports `my_picture/my_avatar.jpg`, and `content.ts` imports the Playground renders in `playground/`, both with `new URL(…, import.meta.url)`. `music/`, `portfolio-assets/`, `abdul-reference.html` and the CV PDF in `my_picture/` stay in the repo but the site does not use them.

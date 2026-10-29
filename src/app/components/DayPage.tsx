@@ -5,6 +5,7 @@ import { Frame } from "./Frame";
 import { DawnPoster } from "./posters/DawnPoster";
 import { SunrisePoster } from "./posters/SunrisePoster";
 import { MiddayPoster } from "./posters/MiddayPoster";
+import { AfternoonPoster } from "./posters/AfternoonPoster";
 import { SunsetPoster } from "./posters/SunsetPoster";
 import { DuskPoster } from "./posters/DuskPoster";
 import { TwilightPoster } from "./posters/TwilightPoster";
@@ -142,6 +143,7 @@ export function DayPage() {
         <DawnPoster />
         <SunrisePoster />
         <MiddayPoster />
+        <AfternoonPoster />
         <SunsetPoster />
         <DuskPoster />
         <TwilightPoster />
