@@ -231,6 +231,8 @@
   background-size: 220px 220px;
   opacity: 0.18;
   mix-blend-mode: multiply;
+  /* Fade in and out over the same 30vh band the Sky blends across, so the paper has no hard edge. */
+  mask-image: linear-gradient(to bottom, transparent, black 30vh, black calc(100% - 30vh), transparent);
 }
 
 .slam {
