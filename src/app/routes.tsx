@@ -8,7 +8,7 @@ const legacyPaths: Record<string, string> = {
   education: "dusk",
   experience: "midday",
   playlist: "midday",
-  projects: "midday",
+  projects: "afternoon",
   contact: "twilight",
 };
 

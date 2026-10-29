@@ -13,6 +13,7 @@ export const timeSlots: TimeSlot[] = [
   { id: "dawn", label: "Dawn", vn: "rạng đông", topic: "Profile", time: "05:00", sky: "#141833", ink: "#E9E6F2", accent: "#F4A6B4" },
   { id: "sunrise", label: "Sunrise", vn: "bình minh", topic: "Objective", time: "06:30", sky: "#F6EADB", ink: "#2A1A12", accent: "#F26B1D" },
   { id: "midday", label: "Midday", vn: "giữa trưa", topic: "Experience", time: "12:00", sky: "#F7F7F2", ink: "#0A0A0A", accent: "#E63228" },
+  { id: "afternoon", label: "Afternoon", vn: "xế chiều", topic: "Playground", time: "15:00", sky: "#F2C46B", ink: "#1E1406", accent: "#5B2FD1" },
   { id: "sunset", label: "Sunset", vn: "hoàng hôn", topic: "Skills", time: "18:00", sky: "#E0602F", ink: "#1F0B06", accent: "#FFE0A3" },
   { id: "dusk", label: "Dusk", vn: "chạng vạng", topic: "Education", time: "19:00", sky: "#2F2A55", ink: "#F1E6F7", accent: "#FF8B6A" },
   { id: "twilight", label: "Twilight", vn: "nhá nhem", topic: "Contact", time: "20:00", sky: "#0B1020", ink: "#E8ECF5", accent: "#A8D8FF" },

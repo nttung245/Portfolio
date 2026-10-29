@@ -30,7 +30,9 @@ export function Frame({ active, clock, progress }: FrameProps) {
           {profile.name}
         </a>
         <p className="flex items-center gap-4 tabular-nums">
-          <span className="hidden opacity-70 sm:inline">N°{String(active + 1).padStart(2, "0")}/06</span>
+          <span className="hidden opacity-70 sm:inline">
+            N°{String(active + 1).padStart(2, "0")}/{String(timeSlots.length).padStart(2, "0")}
+          </span>
           <motion.span aria-label="Time of day" className="text-[13px] tracking-[0.12em]">
             {clock}
           </motion.span>
@@ -45,7 +47,10 @@ export function Frame({ active, clock, progress }: FrameProps) {
           <motion.div className="absolute inset-0 origin-left bg-ink" style={{ scaleX: progress }} />
         </div>
 
-        <ol className="mt-3 hidden grid-cols-6 gap-4 md:grid">
+        <ol
+          className="mt-3 hidden gap-4 md:grid"
+          style={{ gridTemplateColumns: `repeat(${timeSlots.length}, minmax(0, 1fr))` }}
+        >
           {timeSlots.map((item, index) => {
             const isActive = index === active;
 

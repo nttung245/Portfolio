@@ -13,11 +13,11 @@ The one motion idea a Poster is built around.
 _Avoid_: effect, trick, animation
 
 **Time slot**:
-One of the six moments of the day that a Poster stands for, in order: Dawn, Sunrise, Midday, Sunset, Dusk, Twilight.
+One of the seven moments of the day that a Poster stands for, in order: Dawn, Sunrise, Midday, Afternoon, Sunset, Dusk, Twilight.
 _Avoid_: mood, theme, chapter
 
 **Midday**:
-The Time slot at the peak of the day, between Sunrise and Sunset.
+The Time slot at the peak of the day, between Sunrise and Afternoon.
 _Avoid_: middle day, noon
 
 **Sky**:
@@ -41,9 +41,9 @@ The time of day shown in the Frame, which advances from Dawn to Twilight as the 
 _Avoid_: timer, local time
 
 **Topic**:
-The resume-style name for what a Poster holds (Profile, Objective, Experience, Skills, Education, Contact), shown in the Timeline and at the top of the Poster.
+The resume-style name for what a Poster holds (Profile, Objective, Experience, Playground, Skills, Education, Contact), shown in the Timeline and at the top of the Poster.
 _Avoid_: section name, title
 
 **Timeline**:
-The row of six Topics in the Frame, one per Time slot; choosing one jumps to its Poster.
+The row of seven Topics in the Frame, one per Time slot; choosing one jumps to its Poster.
 _Avoid_: nav links, menu
