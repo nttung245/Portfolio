@@ -1,95 +1,185 @@
-import type { CSSProperties, MouseEvent } from "react";
-import { motion, type MotionValue } from "motion/react";
-import { timeSlots } from "../day";
+import { useLayoutEffect, useRef, type MouseEvent } from "react";
+import { AnimatePresence, animate, m, useMotionValue, type MotionValue } from "motion/react";
+import {
+  BriefcaseBusiness,
+  Cpu,
+  Gamepad2,
+  GraduationCap,
+  Mail,
+  Target,
+  UserRound,
+  X,
+  type LucideIcon,
+} from "lucide-react";
+import { slotHash, timeSlots } from "../day";
 import { profile } from "../content";
 
 type FrameProps = {
   active: number;
   clock: MotionValue<string>;
   progress: MotionValue<number>;
+  /** Whether a Poster is open, rather than the Switcher showing. */
+  open: boolean;
+  onSelect: (index: number) => void;
+  onClose: () => void;
 };
 
-function jumpTo(id: string) {
+// The Frame floats Liquid Glass controls over the Switcher and over an open Poster, as iOS 26
+// floats its bars: there is no bar behind them.
+const SPRING = { type: "spring", visualDuration: 0.42, bounce: 0.2 } as const;
+
+// Each Topic's icon, which stands in for its name in the Timeline on small screens.
+const topicIcons: Record<string, LucideIcon> = {
+  dawn: UserRound,
+  sunrise: Target,
+  midday: BriefcaseBusiness,
+  afternoon: Gamepad2,
+  sunset: Cpu,
+  dusk: GraduationCap,
+  twilight: Mail,
+};
+
+// Plain links underneath, so a Topic still opens in a new tab; a normal click stays in the page.
+function choose(index: number, onSelect: (index: number) => void) {
   return (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
     event.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.history.replaceState(null, "", `#${id}`);
+    onSelect(index);
   };
 }
 
-export function Frame({ active, clock, progress }: FrameProps) {
-  const slot = timeSlots[active];
+function DayRing({ progress }: { progress: MotionValue<number> }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 20 20" className="size-[17px] -rotate-90">
+      <circle cx="10" cy="10" r="7.5" className="fill-none stroke-ink/25" strokeWidth="3" />
+      <m.circle
+        cx="10"
+        cy="10"
+        r="7.5"
+        className="fill-none stroke-accent"
+        strokeWidth="3"
+        strokeLinecap="round"
+        style={{ pathLength: progress }}
+      />
+    </svg>
+  );
+}
+
+// The lens slides to the active Topic on a spring. It is placed from measurements rather than a
+// shared layout animation, which keeps motion's layout engine out of the bundle.
+function useLens(active: number) {
+  const tabs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const x = useMotionValue(0);
+  const width = useMotionValue(0);
+  const placed = useRef(false);
+
+  useLayoutEffect(() => {
+    const place = (smooth: boolean) => {
+      const tab = tabs.current[active];
+      if (!tab) return;
+      if (smooth) {
+        animate(x, tab.offsetLeft, SPRING);
+        animate(width, tab.offsetWidth, SPRING);
+      } else {
+        x.set(tab.offsetLeft);
+        width.set(tab.offsetWidth);
+      }
+    };
+    place(placed.current);
+    placed.current = true;
+    const onResize = () => place(false);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [active, x, width]);
+
+  return { tabs, x, width };
+}
+
+const pill = "glass pointer-events-auto flex h-9 items-center rounded-full";
+
+export function Frame({ active, clock, progress, open, onSelect, onClose }: FrameProps) {
+  const lens = useLens(active);
 
   return (
-    <div
-      className="pointer-events-none fixed inset-0 z-50 font-mono text-ink transition-colors duration-500"
-      style={{ "--ink": slot.ink, "--accent": slot.accent } as CSSProperties}
-    >
-      <header className="pointer-events-auto absolute inset-x-0 top-0 flex h-14 items-center justify-between bg-linear-to-b from-sky from-40% to-transparent px-4 text-[11px] uppercase tracking-[0.2em] sm:px-8">
-        <a href="#dawn" onClick={jumpTo("dawn")} className="font-semibold">
-          {profile.name}
-        </a>
-        <p className="flex items-center gap-4 tabular-nums">
-          <span className="hidden opacity-70 sm:inline">
-            N°{String(active + 1).padStart(2, "0")}/{String(timeSlots.length).padStart(2, "0")}
-          </span>
-          <motion.span aria-label="Time of day" className="text-[13px] tracking-[0.12em]">
-            {clock}
-          </motion.span>
+    <div className="pointer-events-none fixed inset-0 z-50 text-ink">
+      <header className="absolute inset-x-0 top-3 flex h-9 items-center justify-between px-4 sm:px-8">
+        <AnimatePresence initial={false} mode="popLayout">
+          {open ? (
+            <m.button
+              key="close"
+              type="button"
+              onClick={onClose}
+              aria-label="Back to all Posters"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={SPRING}
+              className={`${pill} press -ml-1 w-9 justify-center`}
+            >
+              <X aria-hidden="true" className="size-[18px]" strokeWidth={2.4} />
+            </m.button>
+          ) : (
+            <m.a
+              key="name"
+              href="/"
+              onClick={choose(0, onSelect)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="press lift pointer-events-auto text-[15px] font-semibold tracking-[-0.01em]"
+            >
+              {profile.name}
+            </m.a>
+          )}
+        </AnimatePresence>
+        <p className={`${pill} px-3 text-[13px] font-semibold tabular-nums`}>
+          {String(active + 1).padStart(2, "0")}
+          <span className="text-ink/55">/{String(timeSlots.length).padStart(2, "0")}</span>
         </p>
       </header>
 
-      <nav
-        aria-label="Time of day"
-        className="pointer-events-auto absolute inset-x-0 bottom-0 bg-linear-to-t from-sky from-50% to-transparent px-4 pb-3 pt-8 sm:px-8"
-      >
-        <div className="relative h-px bg-ink/20">
-          <motion.div className="absolute inset-0 origin-left bg-ink" style={{ scaleX: progress }} />
-        </div>
+      <div className="absolute inset-x-0 top-3 flex justify-center">
+        <p className={`${pill} gap-2 px-3.5`}>
+          <DayRing progress={progress} />
+          <m.span aria-label="Time of day" className="text-[14px] font-semibold tabular-nums tracking-[-0.01em]">
+            {clock}
+          </m.span>
+        </p>
+      </div>
 
-        <ol
-          className="mt-3 hidden gap-4 md:grid"
-          style={{ gridTemplateColumns: `repeat(${timeSlots.length}, minmax(0, 1fr))` }}
-        >
+      <nav aria-label="Timeline" className="absolute inset-x-0 bottom-0 flex justify-center px-3 pb-[max(14px,env(safe-area-inset-bottom))]">
+        <ol className="glass pointer-events-auto relative flex items-center rounded-full p-1 md:gap-0.5 md:p-1.5">
+          <m.span
+            aria-hidden="true"
+            className="absolute inset-y-1 left-0 rounded-full bg-ink/22 shadow-[inset_0_1px_0_rgb(255_255_255/0.3)] md:inset-y-1.5"
+            style={{ x: lens.x, width: lens.width }}
+          />
           {timeSlots.map((item, index) => {
             const isActive = index === active;
+            const Icon = topicIcons[item.id];
 
             return (
               <li key={item.id}>
                 <a
-                  href={`#${item.id}`}
-                  onClick={jumpTo(item.id)}
+                  ref={(node) => {
+                    lens.tabs.current[index] = node;
+                  }}
+                  href={`#${slotHash(item)}`}
+                  onClick={choose(index, onSelect)}
+                  aria-label={item.topic}
                   aria-current={isActive ? "step" : undefined}
-                  className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] transition-opacity duration-300 ${
-                    isActive ? "opacity-100" : "opacity-45 hover:opacity-80"
+                  className={`press relative flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-200 min-[400px]:w-11 md:h-9 md:w-auto md:px-4 ${
+                    isActive ? "text-ink" : "text-ink/60 hover:text-ink"
                   }`}
                 >
-                  <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-accent" : "bg-ink/40"}`} />
-                  {item.topic}
+                  <Icon aria-hidden="true" className="size-[21px] md:hidden" strokeWidth={isActive ? 2.2 : 1.8} />
+                  {/* One weight for every tab, so the bar keeps its width as the lens moves. */}
+                  <span className="hidden text-[13px] font-semibold tracking-[-0.01em] md:inline">{item.topic}</span>
                 </a>
               </li>
             );
           })}
         </ol>
-
-        <div className="mt-2 flex items-center justify-between md:hidden">
-          <p className="text-[10px] uppercase tracking-[0.2em]">{slot.topic}</p>
-          <ol className="-mr-1.5 flex items-center">
-            {timeSlots.map((item, index) => (
-              <li key={item.id}>
-                <a
-                  href={`#${item.id}`}
-                  onClick={jumpTo(item.id)}
-                  aria-label={item.topic}
-                  aria-current={index === active ? "step" : undefined}
-                  className="flex h-7 w-7 items-center justify-center"
-                >
-                  <span className={`h-1.5 w-1.5 rounded-full transition-colors ${index === active ? "bg-accent" : "bg-ink/35"}`} />
-                </a>
-              </li>
-            ))}
-          </ol>
-        </div>
       </nav>
     </div>
   );

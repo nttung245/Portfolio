@@ -1,110 +1,118 @@
-import type { CSSProperties } from "react";
-import { motion, type Variants } from "motion/react";
+import { useEffect, useId, useRef } from "react";
+import { animate, useReducedMotion } from "motion/react";
+import { Compass, Sparkles, UserRound } from "lucide-react";
 import { slotById } from "../../day";
-import { objective, profile, roles } from "../../content";
-import { Poster, PosterHead } from "../Poster";
+import { objective, objectiveFocus, roles } from "../../content";
+import { useOpener } from "../Card";
+import { Chips, Detail, Eyebrow, Hero, Module } from "../Poster";
 
 const slot = slotById.sunrise;
-const avatar = new URL("../../../../my_picture/my_avatar.jpg", import.meta.url).href;
 
-// Sunrise plays once, in order, then rests: the horizon draws out, the sun rises and its glow
-// warms, the roles come up behind it, and the objective settles in last.
-const EASE_OUT = [0.16, 1, 0.3, 1] as const;
+// The sun's path across the day, as the Weather app draws it: bright above the horizon, faint
+// below it. Its ends sit at Sunrise and Sunset, the day's own Time slots.
+const PATH = "M 0 132 C 70 132, 120 18, 200 18 C 280 18, 330 132, 400 132";
+const HORIZON = 96;
 
-const horizon: Variants = {
-  hidden: { scaleX: 0 },
-  shown: { scaleX: 1, transition: { duration: 1.1, ease: EASE_OUT } },
-};
+// Objective's Motif: the sun climbs the path from the dark and stops just clear of the horizon,
+// where the Day clock says 06:30.
+function SunPath() {
+  const reduceMotion = useReducedMotion();
+  const box = useRef<SVGSVGElement>(null);
+  const path = useRef<SVGPathElement>(null);
+  const sun = useRef<SVGGElement>(null);
+  const start = useOpener(box, 0.5);
+  const ids = useId();
 
-const sun: Variants = {
-  hidden: { y: "102%" },
-  shown: { y: "6%", transition: { duration: 2.6, ease: EASE_OUT, delay: 0.15 } },
-};
+  useEffect(() => {
+    const line = path.current;
+    const dot = sun.current;
+    if (!line || !dot) return;
+    const total = line.getTotalLength();
+    // The first point on the rising side that clears the horizon.
+    let rise = 0;
+    while (rise < total / 2 && line.getPointAtLength(rise).y > HORIZON - 6) rise += 1;
+    const place = (length: number) => {
+      const point = line.getPointAtLength(length);
+      dot.setAttribute("transform", `translate(${point.x} ${point.y})`);
+    };
+    if (!start || reduceMotion) {
+      place(start || reduceMotion ? rise : 0);
+      return;
+    }
+    const control = animate(0, rise, { duration: 2.2, ease: [0.22, 1, 0.36, 1], onUpdate: place });
+    return () => control.stop();
+  }, [start, reduceMotion]);
 
-const halo: Variants = {
-  hidden: { opacity: 0, scale: 0.85 },
-  shown: { opacity: 1, scale: 1, transition: { duration: 2.8, ease: EASE_OUT, delay: 0.3 } },
-};
-
-const role: Variants = {
-  hidden: { y: "105%" },
-  shown: (index: number) => ({ y: 0, transition: { duration: 1, ease: EASE_OUT, delay: 1 + index * 0.12 } }),
-};
-
-const paragraph: Variants = {
-  hidden: { opacity: 0, y: 14 },
-  shown: (index: number) => ({ opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE_OUT, delay: 1.5 + index * 0.1 } }),
-};
-
-export function SunrisePoster() {
   return (
-    <Poster slot={slot}>
-      <PosterHead slot={slot} />
+    <div>
+      <svg ref={box} aria-hidden="true" viewBox="0 0 400 150" className="w-full overflow-visible">
+        <defs>
+          <clipPath id={`${ids}-day`}>
+            <rect x="-20" y="-40" width="440" height={HORIZON + 40} />
+          </clipPath>
+          <clipPath id={`${ids}-night`}>
+            <rect x="-20" y={HORIZON} width="440" height="100" />
+          </clipPath>
+          <radialGradient id={`${ids}-glow`}>
+            <stop offset="0" stopColor="#FFE2A8" stopOpacity="0.75" />
+            <stop offset="1" stopColor="#FFE2A8" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <path ref={path} d={PATH} fill="none" stroke="white" strokeOpacity="0.85" strokeWidth="2.5" strokeLinecap="round" clipPath={`url(#${ids}-day)`} />
+        <path d={PATH} fill="none" stroke="white" strokeOpacity="0.3" strokeWidth="2.5" strokeLinecap="round" clipPath={`url(#${ids}-night)`} />
+        <line x1="0" x2="400" y1={HORIZON} y2={HORIZON} stroke="white" strokeOpacity="0.35" strokeWidth="1" />
+        <g ref={sun} transform="translate(0 132)">
+          <circle r="30" fill={`url(#${ids}-glow)`} />
+          <circle r="7" fill="#FFF6DA" />
+        </g>
+      </svg>
+      <div className="mt-3 flex justify-between text-subhead">
+        <p>
+          <span className="block text-ink/65">Sunrise</span>
+          <span className="font-semibold tabular-nums">{slot.time}</span>
+        </p>
+        <p className="text-right">
+          <span className="block text-ink/65">Sunset</span>
+          <span className="font-semibold tabular-nums">{slotById.sunset.time}</span>
+        </p>
+      </div>
+    </div>
+  );
+}
 
-      <motion.div
-        initial="hidden"
-        whileInView="shown"
-        viewport={{ once: true, amount: 0.35 }}
-        className="mt-8 flex flex-1 flex-col"
-        style={{ "--sun": "min(64vw, 52vh)" } as CSSProperties}
-      >
-        <div className="flex flex-1 flex-col justify-end">
-          {/* Everything above the horizon line is clipped by it, so the sun and roles rise out of it. */}
-          <div className="relative h-[calc(var(--sun)*1.3)] overflow-hidden">
-            <motion.div variants={sun} className="absolute inset-x-0 bottom-0 mx-auto aspect-square h-[var(--sun)]">
-              <motion.div variants={halo} aria-hidden="true" className="absolute -inset-[45%]">
-                <div
-                  className="halo motif h-full w-full rounded-full"
-                  style={{
-                    background:
-                      "radial-gradient(circle, rgb(242 107 29 / 0.34) 0%, rgb(242 107 29 / 0.12) 38%, transparent 68%)",
-                  }}
-                />
-              </motion.div>
-              <div className="relative isolate h-full w-full overflow-hidden rounded-full bg-accent">
-                <img
-                  src={avatar}
-                  alt={profile.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover grayscale contrast-125 mix-blend-multiply"
-                />
-              </div>
-            </motion.div>
-
-            <p
-              aria-hidden="true"
-              className="absolute inset-x-0 bottom-0 text-center font-display text-[length:min(9.5vw,12vh)] font-[850] uppercase leading-[0.9] text-sky [-webkit-text-stroke:2.5px_var(--ink)] [font-stretch:75%] [paint-order:stroke_fill]"
-            >
-              {roles.map((name, index) => (
-                <span key={name} className="block overflow-hidden">
-                  <motion.span variants={role} custom={index} className="block">
-                    {name}
-                  </motion.span>
-                </span>
-              ))}
-            </p>
-          </div>
-
-          {/* The horizon catches the light right under the sun. */}
-          <motion.div
-            variants={horizon}
-            aria-hidden="true"
-            className="h-0.5 origin-center"
-            style={{
-              background: "linear-gradient(90deg, var(--ink) 0%, var(--ink) 32%, var(--accent) 50%, var(--ink) 68%, var(--ink) 100%)",
-            }}
-          />
-        </div>
-
-        <div className="mt-8 grid gap-4 font-mono text-[14px] leading-7 md:grid-cols-2 md:gap-10">
-          {objective.map((line, index) => (
-            <motion.p key={line} variants={paragraph} custom={index}>
-              {line}
-            </motion.p>
+export function SunriseHero() {
+  return (
+    <Hero slot={slot}>
+      <Eyebrow>Objective</Eyebrow>
+      <div className="mt-8 w-full max-w-xl self-center md:mt-10">
+        <SunPath />
+      </div>
+      <div className="mt-auto">
+        <h2 className="lift text-[clamp(56px,14vw,160px)] font-extrabold leading-[0.9] tracking-[-0.045em] md:text-[clamp(72px,9vw,150px)]">
+          {roles.map((role) => (
+            <span key={role} className="block">
+              {role}.
+            </span>
           ))}
-        </div>
-      </motion.div>
-    </Poster>
+        </h2>
+        <p className="lift mt-5 max-w-xl text-[clamp(17px,1.6vw,20px)] leading-[1.45] text-ink/90">{objective[0]}</p>
+      </div>
+    </Hero>
+  );
+}
+
+export function SunriseDetail() {
+  return (
+    <Detail>
+      <Module title="About me" icon={UserRound} index={0}>
+        <p className="text-[19px] leading-[1.5] tracking-[-0.015em]">{objective[0]}</p>
+      </Module>
+      <Module title="Looking for" icon={Compass} index={1}>
+        <p className="text-[19px] leading-[1.5] tracking-[-0.015em]">{objective[1]}</p>
+      </Module>
+      <Module title="Focus" icon={Sparkles} index={2}>
+        <Chips items={objectiveFocus} />
+      </Module>
+    </Detail>
   );
 }

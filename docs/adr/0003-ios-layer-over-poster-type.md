@@ -1,0 +1,5 @@
+# iOS styles the Frame, controls and reading text; the Posters keep their poster type
+
+Superseded by ADR 0005: the Posters now speak the same iOS language as the Frame.
+
+The site should feel like iOS: Liquid Glass chrome, springy controls, and text set in San Francisco (Inter on non-Apple devices). That styling covers the Frame, every control, and the reading text. The Posters themselves keep Archivo display type, the mono micro-labels, and their Motifs, including the stepped PUMA motion and the glitch, which are deliberately not smooth. We rejected a full iOS restyle: rounding and softening every Poster would wipe out the kinetic-type identity that the day cycle is built on. So new glass, springs and reveals go on controls and copy, never on a Motif.

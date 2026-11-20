@@ -1,107 +1,135 @@
-import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
-import { useInView, useReducedMotion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "motion/react";
+import { BriefcaseBusiness, Github, GraduationCap, Linkedin, Mail, MapPin, Send, UserRound } from "lucide-react";
 import { slotById } from "../../day";
-import { profile } from "../../content";
-import { Poster, PosterHead } from "../Poster";
-import { StarField } from "../StarField";
-import { StaticNoise } from "../StaticNoise";
+import { education, experiences, profile } from "../../content";
+import { useOpener } from "../Card";
+import { Detail, Eyebrow, Hero, Module, Row, useCopy } from "../Poster";
 
 const slot = slotById.dawn;
-const lines = profile.name.toUpperCase().split(" ");
-const totalChars = lines.join("").length;
+const photo = new URL("../../../../my_picture/profile.webp", import.meta.url).href;
+const figure = new URL("../../../../my_picture/profile-figure.webp", import.meta.url).href;
+// The photo and the cut-out of the figure pin the same point, so the figure always lands exactly
+// on itself, whatever the shape of the screen.
+const FOCUS = "50% 40%";
+const words = profile.name.split(" ");
 
-// Types the name in letter by letter; once it is complete the lines join the glitch loop.
-function useTyping(active: boolean) {
+// Types the name in at an even pace; each letter settles in rather than popping.
+function useTyping(start: boolean, total: number) {
   const reduceMotion = useReducedMotion();
   const [typed, setTyped] = useState(0);
 
   useEffect(() => {
-    if (!active) return;
+    if (!start) return;
     if (reduceMotion) {
-      setTyped(totalChars);
+      setTyped(total);
       return;
     }
-
     let count = 0;
     let timer = window.setTimeout(function tick() {
       count += 1;
       setTyped(count);
-      if (count < totalChars) timer = window.setTimeout(tick, 70 + Math.random() * 80);
-    }, 500);
+      if (count < total) timer = window.setTimeout(tick, 78);
+    }, 380);
     return () => window.clearTimeout(timer);
-  }, [active, reduceMotion]);
+  }, [start, total, reduceMotion]);
 
   return typed;
 }
 
-export function DawnPoster() {
-  const nameRef = useRef<HTMLHeadingElement>(null);
-  const inView = useInView(nameRef, { once: true, amount: 0.4 });
-  const typed = useTyping(inView);
-  const done = typed >= totalChars;
-  let lineStart = 0;
+// Profile's Hero is an iOS Contact Poster: the photo fills the Card and the name stands behind
+// the figure's head, as the clock does on a Lock Screen with the depth effect.
+export function DawnHero() {
+  const name = useRef<HTMLHeadingElement>(null);
+  const start = useOpener(name, 0.2);
+  const letters = words.join("").length;
+  const typed = useTyping(start, letters);
+  let index = 0;
 
   return (
-    <Poster
-      slot={slot}
-      className="justify-between"
-      style={{ "--glitch-a": "#FF4FB8", "--glitch-b": "#4FE3FF" } as CSSProperties}
-    >
-      <StarField
-        seed={7}
-        count={70}
-        className="inset-x-0 top-0 -z-10 h-[80%] [mask-image:linear-gradient(to_bottom,black_30%,transparent)]"
-      />
-      <StaticNoise on={done} />
+    <Hero slot={slot}>
+      {/* The photo dissolves into the Sky at its foot, so an open Poster flows on into its Detail. */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 [mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
+        <img
+          src={photo}
+        alt=""
+        width={1080}
+        height={1440}
+        decoding="async"
+        {...{ fetchpriority: "high" }}
+          className="h-full w-full object-cover"
+          style={{ objectPosition: FOCUS }}
+        />
+      </div>
 
-      <PosterHead slot={slot} title={profile.coordinates} heading={false} />
+      <Eyebrow>Profile</Eyebrow>
 
       <h1
-        ref={nameRef}
+        ref={name}
         aria-label={profile.name}
-        className="motif my-10 font-display text-[length:18vw] font-[850] leading-[0.86] [font-stretch:100%] md:text-[length:min(15.5vw,25vh)] md:[font-stretch:112%]"
+        className="motif lift absolute inset-x-0 bottom-[58%] z-10 px-4 text-center text-[clamp(64px,19vw,180px)] font-extrabold leading-[0.88] tracking-[-0.045em] md:text-[clamp(96px,11.5vw,210px)]"
       >
-        {lines.map((line, lineIndex) => {
-          const start = lineStart;
-          lineStart += line.length;
-          const cursorAt = typed - start;
-          const isLast = lineIndex === lines.length - 1;
-          const hasCursor = (cursorAt >= 0 && cursorAt < line.length) || (isLast && done);
-
-          return (
-            <span
-              key={line}
-              aria-hidden="true"
-              data-text={line}
-              className={`glitch block whitespace-nowrap ${done ? "is-on" : ""}`}
-              style={{ "--glitch-delay": `${lineIndex * 0.09}s` } as CSSProperties}
-            >
-              {[...line].map((char, index) => (
-                <Fragment key={index}>
-                  {hasCursor && index === cursorAt && <span className="type-cursor" />}
-                  <span className={start + index < typed ? undefined : "invisible"}>{char}</span>
-                </Fragment>
-              ))}
-              {hasCursor && cursorAt >= line.length && <span className="type-cursor" />}
-            </span>
-          );
-        })}
+        {words.map((word, wordIndex) => (
+          <span key={word} aria-hidden="true" className="block md:inline">
+            {wordIndex > 0 && <span className="hidden md:inline"> </span>}
+            {[...word].map((letter) => {
+              const at = index++;
+              const shown = at < typed;
+              return (
+                <span key={at}>
+                  <span className={shown ? "type-letter" : "opacity-0"}>{letter}</span>
+                  {start && at === Math.max(typed - 1, 0) && (typed < letters || at === letters - 1) && <span className="type-caret" />}
+                </span>
+              );
+            })}
+          </span>
+        ))}
       </h1>
 
-      <div className="relative flex flex-col gap-5">
-        {/* First light: a faint glow rising from the horizon. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -inset-x-4 bottom-full -z-10 h-[45vh] bg-linear-to-t from-accent/20 via-accent/5 to-transparent sm:-inset-x-8"
+      <div className="pointer-events-none absolute inset-0 z-20 [mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
+        <img
+          src={figure}
+          alt={`${profile.name} looking out to sea at first light`}
+          width={1080}
+          height={1440}
+          decoding="async"
+          className="h-full w-full object-cover"
+          style={{ objectPosition: FOCUS }}
         />
-        <div aria-hidden="true" className="relative h-px bg-accent">
-          <span className="absolute bottom-0 left-1/2 h-5 w-10 -translate-x-1/2 rounded-t-full bg-accent" />
-        </div>
-        <p className="flex flex-wrap justify-between gap-x-8 gap-y-1 font-mono text-[12px] uppercase tracking-[0.2em]">
-          <span>{profile.role}</span>
-          <span className="opacity-70">{profile.location}</span>
+        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[46%] bg-linear-to-t from-black/55 via-black/25 to-transparent" />
+      </div>
+
+      <div className="relative z-30 mt-auto">
+        <p className="text-[clamp(22px,2.4vw,30px)] font-semibold tracking-[-0.02em]">{profile.role}</p>
+        <p className="mt-1.5 flex items-center gap-1.5 text-body text-ink/75">
+          <MapPin aria-hidden="true" className="size-4" strokeWidth={2.2} />
+          {profile.location}
         </p>
       </div>
-    </Poster>
+    </Hero>
+  );
+}
+
+export function DawnDetail() {
+  const email = useCopy(profile.email);
+  const now = experiences[0];
+
+  return (
+    <Detail>
+      <Module title="About" icon={UserRound} index={0}>
+        <ul>
+          <Row icon={BriefcaseBusiness} label="Now" value={`${now.role}, ${now.company}`} />
+          <Row icon={GraduationCap} label="Studying" value={`${education.short} · ${education.period}`} />
+          <Row icon={MapPin} label="Based in" value={profile.location} />
+        </ul>
+      </Module>
+      <Module title="Reach me" icon={Send} index={1}>
+        <ul>
+          <Row icon={Mail} label="Email" value={email.copied ? "Copied" : profile.email} onClick={email.copy} />
+          <Row icon={Github} label="GitHub" value={profile.github.replace("https://github.com/", "")} href={profile.github} />
+          <Row icon={Linkedin} label="LinkedIn" value="nttung245" href={profile.linkedin} />
+        </ul>
+      </Module>
+    </Detail>
   );
 }

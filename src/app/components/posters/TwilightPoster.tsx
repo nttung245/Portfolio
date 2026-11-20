@@ -1,103 +1,114 @@
-import type { CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
+import { m, useReducedMotion } from "motion/react";
+import { Check, Copy, Github, Linkedin, Mail, MapPin, Send, Waypoints } from "lucide-react";
 import { slotById } from "../../day";
-import { composeLinks, profile } from "../../content";
-import { Poster, PosterHead } from "../Poster";
+import { composeLinks, contact, profile } from "../../content";
+import { useOpener } from "../Card";
+import { Detail, Eyebrow, Hero, Module, Row, Stars, useCopy } from "../Poster";
 
 const slot = slotById.twilight;
+const button = "press inline-flex h-12 items-center gap-2 rounded-full px-5 text-[15px] font-semibold tracking-[-0.01em]";
+const bubble = "rounded-[22px] rounded-bl-md bg-ink/16 shadow-[inset_0_1px_0_rgb(255_255_255/0.14)]";
 
-// The constellation traces the TN monogram; the loose stars around it are scenery.
-const constellation = [
-  "120,112 250,98 382,114",
-  "250,98 258,262 268,432",
-  "560,440 575,252 590,110 700,272 812,432 826,270 840,106",
-];
+// Contact's Motif: an incoming iMessage. The typing indicator shows for a moment, then the
+// message lands with a spring. The message is always laid out, so nothing below it moves.
+function Message({ text }: { text: string }) {
+  const box = useRef<HTMLDivElement>(null);
+  const start = useOpener(box, 0.6);
+  const reduceMotion = useReducedMotion();
+  const [sent, setSent] = useState(false);
 
-const stars: Array<[x: number, y: number, r: number, delay: number]> = [
-  [120, 112, 4, 0.2],
-  [250, 98, 5, 0],
-  [382, 114, 4, 0.4],
-  [258, 262, 3, 0.8],
-  [268, 432, 4.5, 1.1],
-  [560, 440, 4, 1.4],
-  [575, 252, 3, 1.6],
-  [590, 110, 5, 1.8],
-  [700, 272, 3, 2.1],
-  [812, 432, 4.5, 2.3],
-  [826, 270, 3, 2.5],
-  [840, 106, 4, 2.7],
-  [60, 300, 1.8, 0.6],
-  [420, 330, 1.5, 1.3],
-  [470, 60, 2, 0.9],
-  [680, 64, 1.6, 2],
-  [930, 210, 2.2, 1.5],
-  [904, 478, 1.6, 2.9],
-  [360, 508, 1.8, 0.3],
-  [140, 470, 1.5, 2.4],
-  [980, 52, 1.4, 1.7],
-  [700, 512, 2, 3.1],
-];
+  useEffect(() => {
+    if (!start) return;
+    if (reduceMotion) {
+      setSent(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setSent(true), 1500);
+    return () => window.clearTimeout(timer);
+  }, [start, reduceMotion]);
 
-export function TwilightPoster() {
+  const typing = start && !sent;
+
   return (
-    <Poster slot={slot}>
-      <PosterHead slot={slot} />
+    <div ref={box} className="relative mt-6 max-w-md">
+      <m.p
+        className={`${bubble} px-4 py-2.5 text-[17px] leading-[1.4] tracking-[-0.01em]`}
+        style={{ originX: 0, originY: 1 }}
+        initial={false}
+        animate={sent || reduceMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.85, y: 8 }}
+        transition={{ type: "spring", visualDuration: 0.45, bounce: 0.3 }}
+      >
+        {text}
+      </m.p>
+      <m.div
+        aria-hidden="true"
+        className={`${bubble} absolute bottom-0 left-0 flex gap-1.5 px-4 py-3.5`}
+        style={{ originX: 0, originY: 1 }}
+        initial={false}
+        animate={typing ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.7 }}
+        transition={{ type: "spring", visualDuration: 0.3, bounce: 0.25 }}
+      >
+        <span className="typing-dot size-2 rounded-full bg-ink" />
+        <span className="typing-dot size-2 rounded-full bg-ink" />
+        <span className="typing-dot size-2 rounded-full bg-ink" />
+      </m.div>
+    </div>
+  );
+}
 
-      <svg aria-hidden="true" viewBox="0 0 1000 560" className="motif mt-8 w-full max-w-3xl self-end overflow-visible">
-        {constellation.map((points) => (
-          <polyline
-            key={points}
-            points={points}
-            pathLength={1}
-            className="star-line fill-none stroke-accent"
-            strokeWidth="1.2"
-            strokeLinejoin="round"
-          />
-        ))}
-        {stars.map(([x, y, r, delay]) => (
-          <circle key={`${x}-${y}`} cx={x} cy={y} r={r} className="star fill-current" style={{ "--d": delay } as CSSProperties} />
-        ))}
-      </svg>
+export function TwilightHero() {
+  const email = useCopy(profile.email);
 
-      <div className="mt-auto pt-10">
-        <p className="font-display text-[length:min(11vw,9rem)] font-thin uppercase leading-[0.9] [font-stretch:125%]">
-          Let's talk
-        </p>
-        <a
-          href={`mailto:${profile.email}`}
-          className="mt-8 inline-block font-display text-[length:min(5.4vw,3rem)] font-medium [font-stretch:82%] [overflow-wrap:anywhere] underline decoration-accent decoration-2 underline-offset-8"
-        >
+  return (
+    <Hero slot={slot}>
+      <Stars seed={41} count={64} className="inset-0 -z-10" />
+      <Eyebrow>Contact</Eyebrow>
+      <div className="mt-auto">
+        <h2 className="text-[clamp(64px,15vw,180px)] font-extrabold leading-[0.9] tracking-[-0.05em]">{contact.title}</h2>
+        <Message text={contact.note} />
+        <a href={`mailto:${profile.email}`} className="mt-6 inline-block text-[clamp(18px,2.2vw,26px)] font-semibold tracking-[-0.02em] [overflow-wrap:anywhere]">
           {profile.email}
         </a>
-        <div className="mt-6 flex flex-wrap gap-3 font-mono text-[11px] uppercase tracking-[0.2em]">
-          {composeLinks.map((link) => (
+        <div className="mt-5 flex flex-wrap gap-2.5">
+          {composeLinks.map((link, index) => (
             <a
               key={link.label}
               href={link.href}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-ink/40 px-4 py-2.5 transition-colors hover:border-ink hover:bg-ink hover:text-sky"
+              className={`${button} ${index === 0 ? "bg-ink text-[#0a1125] hover:bg-ink/90" : "bg-ink/14 hover:bg-ink/20"}`}
             >
+              {index === 0 && <Send aria-hidden="true" className="size-4" strokeWidth={2.2} />}
               Compose in {link.label}
             </a>
           ))}
-        </div>
-
-        <div className="mt-14 flex flex-wrap items-end justify-between gap-6 border-t border-ink/20 pt-5 font-mono text-[11px] uppercase tracking-[0.2em]">
-          <ul className="flex gap-6">
-            <li>
-              <a href={profile.github} target="_blank" rel="noreferrer" className="hover:text-accent">
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href={profile.linkedin} target="_blank" rel="noreferrer" className="hover:text-accent">
-                LinkedIn
-              </a>
-            </li>
-          </ul>
-          <p className="opacity-70">{profile.location}</p>
+          <button type="button" onClick={email.copy} className={`${button} bg-ink/14 hover:bg-ink/20`}>
+            {email.copied ? <Check aria-hidden="true" className="size-4 text-accent" strokeWidth={2.6} /> : <Copy aria-hidden="true" className="size-4" strokeWidth={2.2} />}
+            {email.copied ? "Copied" : "Copy email"}
+            <span role="status" className="sr-only">
+              {email.copied ? "Email address copied" : ""}
+            </span>
+          </button>
         </div>
       </div>
-    </Poster>
+    </Hero>
+  );
+}
+
+export function TwilightDetail() {
+  const email = useCopy(profile.email);
+
+  return (
+    <Detail>
+      <Module title="Elsewhere" icon={Waypoints}>
+        <ul>
+          <Row icon={Mail} label="Email" value={email.copied ? "Copied" : profile.email} onClick={email.copy} />
+          <Row icon={Github} label="GitHub" value={profile.github.replace("https://github.com/", "")} href={profile.github} />
+          <Row icon={Linkedin} label="LinkedIn" value="nttung245" href={profile.linkedin} />
+          <Row icon={MapPin} label="Based in" value={profile.location} />
+        </ul>
+      </Module>
+    </Detail>
   );
 }

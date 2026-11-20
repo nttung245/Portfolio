@@ -1,0 +1,7 @@
+# The Posters sit side by side in a Switcher; opening one zooms it to the full screen
+
+This replaces ADR 0001. The site no longer scrolls from top to bottom. The default view is a Switcher, like the iOS app switcher: the seven Posters sit in one row as Cards, the focused one in the middle with its neighbours at the edges, and the visitor swipes along the row. Swiping moves the Sky and the Day clock through the day, so the day still runs from Dawn to Twilight, now under the finger. Opening a Card zooms its Poster to the full screen, where it scrolls for its full detail. A Card is the Poster's first screen scaled down, not a separate summary, so the two cannot drift apart.
+
+We chose this to make the site tidier and closer to iOS. The visitor sees all seven Topics at once and opens only what they want. ADR 0001 rejected scroll-jacking because it fights how recruiters on phones expect a page to move. The Switcher answers that by using the browser's own sideways scrolling with snap points, so swipes keep native momentum, and by keeping each open Poster an ordinary vertical scroll. The cost is on desktop, where a mouse wheel has to turn the row one Card per step, and the arrow keys, the Timeline and a first-visit nudge carry the rest.
+
+Posters still play their Motifs on their own clocks: one-off entrances start the first time their Card has focus and never replay, and loops run only on the focused or open Card.
