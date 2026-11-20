@@ -25,7 +25,7 @@ The default view: the seven Cards in one row that the visitor swipes along, the 
 _Avoid_: carousel, overview, home
 
 **Motif**:
-The one motion idea a Hero is built around, such as the name typing in or the Activity ring closing.
+The one motion idea a Hero is built around, such as the name being written out or the Activity ring closing.
 _Avoid_: effect, trick, animation
 
 **Time slot**:
@@ -47,6 +47,10 @@ _Avoid_: backdrop, wallpaper
 **Ink**:
 The text colour: white, on every Sky.
 _Avoid_: foreground
+
+**Hand**:
+The handwritten face (Caveat) for each Hero's display line, such as the name, the roles and "Let's talk.". Everything else is set in San Francisco.
+_Avoid_: script font, cursive, display font
 
 **Accent**:
 The single highlight colour: sunlight yellow, the same on every Sky.

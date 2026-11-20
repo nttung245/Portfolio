@@ -14,7 +14,7 @@ If `bun run dev` exits with `ENOSPC`, the machine has run out of inotify watcher
 
 ## Design language
 
-The site is "A Day in Type": seven Posters that run from Dawn to night as the visitor swipes through them, told in the language of iOS (ADR 0005). Each Time slot's Sky is a soft gradient with a glow, in the style of the iOS Weather app. Every Sky carries white Ink and one sunlight Accent, set in San Francisco (Inter elsewhere). The Posters sit side by side as Cards in a Switcher, like the iOS app switcher (ADR 0004). `GLOSSARY.md` defines the vocabulary (Poster, Hero, Detail, Card, Switcher, Motif, Time slot, Topic, Sky, Ambient light, Ink, Accent, Frame, Day clock, Timeline); use those words in code and conversation. `docs/adr/` records decisions that are easy to undo by accident: the day cycle replaces a light/dark toggle (0002), the Switcher replaces one long scroll (0004), and one iOS language replaces the earlier poster type and gritty Motifs (0005). 0001 and 0003 are superseded.
+The site is "A Day in Type": seven Posters that run from Dawn to night as the visitor swipes through them, told in the language of iOS (ADR 0005). Each Time slot's Sky is a soft gradient with a glow, in the style of the iOS Weather app. Every Sky carries white Ink and one sunlight Accent, set in San Francisco (Inter elsewhere), with each Hero's display line handwritten in Hand (Caveat, ADR 0006). The Posters sit side by side as Cards in a Switcher, like the iOS app switcher (ADR 0004). `GLOSSARY.md` defines the vocabulary (Poster, Hero, Detail, Card, Switcher, Motif, Time slot, Topic, Sky, Ambient light, Ink, Hand, Accent, Frame, Day clock, Timeline); use those words in code and conversation. `docs/adr/` records decisions that are easy to undo by accident: the day cycle replaces a light/dark toggle (0002), the Switcher replaces one long scroll (0004), one iOS language replaces the earlier poster type and gritty Motifs (0005), and Hero display lines are handwritten (0006). 0001 and 0003 are superseded.
 
 ## Architecture
 
@@ -46,7 +46,7 @@ It also owns the rest of the Switcher. Opening a Card pushes its hash, and closi
 - `Chips`, `Stars` (still stars painted as radial gradients, one layer) and `useCopy`.
 
 Each Hero has one smooth Motif borrowed from iOS. One-off Motifs start from `useOpener`; loops sit in a `motif` element.
-- **Profile:** an iOS Contact Poster with the depth effect. The photo, the name, then a cut-out of the figure on top (`my_picture/profile.webp` and `profile-figure.webp`), all pinned to the same `object-position`, so the name stands behind the head. The name types in letter by letter.
+- **Profile:** an iOS Contact Poster with the depth effect. The photo, the name, then a cut-out of the figure on top (`my_picture/profile.webp` and `profile-figure.webp`), all pinned to the same `object-position`, so the name stands behind the head. The name is written out letter by letter, each letter wiped in like a pen stroke (`write-letter`).
 - **Objective:** the Weather app's sun path. The sun climbs from below the horizon and stops just clear of it at 06:30, between the Sunrise and Sunset slots' times.
 - **Experience:** an Activity ring closes to 48% while the number counts up on the same curve.
 - **Playground:** each world drifts from its day render into its night one and back, a few seconds apart (`daynight` keyframes). The Detail shows each world's facts as Weather-style stat tiles.
@@ -57,11 +57,11 @@ Each Hero has one smooth Motif borrowed from iOS. One-off Motifs start from `use
 **Styles.** `theme.css` holds the iOS tools:
 - `glass` is Liquid Glass for the Frame only, where moving content passes underneath. `glass-dark` is smoked glass for controls on a picture.
 - `module` is the translucent pane for Detail modules: over a smooth gradient a blur changes nothing you can see, so it has none.
-- `eyebrow` and `lift` (a soft shadow for white type on pale Skies), and `press`, which makes a control sink and spring back.
+- `eyebrow` and `lift` (a soft shadow for white type on pale Skies), `hand` (a Hero's display line in Hand, set about a quarter larger than San Francisco would be), and `press`, which makes a control sink and spring back.
 - `ease-spring` and `ease-bounce` are springs sampled into `linear()`, and `text-body` and `text-subhead` are the reading sizes.
 
 `globals.css` holds the few keyframes. Loops run only inside a `motif` element, pause unless the Card is live, and stop under `prefers-reduced-motion`.
 
 **Frame.** Floating glass controls with no bar behind them, as in iOS 26: the name (or a ✕ while a Poster is open), the Day clock with its progress ring, the Poster count, and the Timeline tab bar, whose lens is placed from measured tab positions rather than a layout animation.
 
-**Assets and loading.** Inter comes from `@fontsource-variable/inter` (only the subsets a page needs download, and none on Apple devices, which use San Francisco). There is no third-party request before first paint. `index.html` preloads the Profile photo. The Playground renders in `playground/` load lazily, and the live Agent Arena worlds (`live` in `content.ts`, served by GitHub Pages from the `nttung245/agent-arena` fork) exist only inside the open Playground Detail: on desktop they load at once, and on touch screens or under reduced motion they wait for a tap. `my_avatar.jpg`, the CV PDF, `music/`, `portfolio-assets/` and `abdul-reference.html` stay in the repo, but the site does not use them.
+**Assets and loading.** Inter comes from `@fontsource-variable/inter` (only the subsets a page needs download, and none on Apple devices, which use San Francisco). Hand comes from `@fontsource-variable/caveat`; only its Latin file (75 KB) downloads. There is no third-party request before first paint. `index.html` preloads the Profile photo. The Playground renders in `playground/` load lazily, and the live Agent Arena worlds (`live` in `content.ts`, served by GitHub Pages from the `nttung245/agent-arena` fork) exist only inside the open Playground Detail: on desktop they load at once, and on touch screens or under reduced motion they wait for a tap. `my_avatar.jpg`, the CV PDF, `music/`, `portfolio-assets/` and `abdul-reference.html` stay in the repo, but the site does not use them.

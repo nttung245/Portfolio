@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import "@fontsource-variable/inter/wght.css";
+import "@fontsource-variable/caveat/wght.css";
 import App from "./app/App.tsx";
 import { slotHash, slotIndexFromHash, timeSlots } from "./app/day";
 import "./styles/index.css";

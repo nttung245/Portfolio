@@ -41,7 +41,7 @@ export function AfternoonHero() {
   return (
     <Hero slot={slot}>
       <Eyebrow>Playground</Eyebrow>
-      <h2 className="lift mt-4 text-[clamp(44px,8vw,112px)] font-extrabold leading-[0.92] tracking-[-0.045em]">{playground.title}</h2>
+      <h2 className="hand lift mt-4 text-[clamp(56px,10.5vw,144px)] leading-[0.88]">{playground.title}</h2>
       <div className="mt-auto grid gap-3 sm:grid-cols-2 sm:gap-4">
         {playgroundWorlds.map((world, index) => (
           <DayNight key={world.name} world={world} index={index} />

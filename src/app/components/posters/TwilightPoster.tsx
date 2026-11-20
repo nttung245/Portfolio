@@ -65,7 +65,7 @@ export function TwilightHero() {
       <Stars seed={41} count={64} className="inset-0 -z-10" />
       <Eyebrow>Contact</Eyebrow>
       <div className="mt-auto">
-        <h2 className="text-[clamp(64px,15vw,180px)] font-extrabold leading-[0.9] tracking-[-0.05em]">{contact.title}</h2>
+        <h2 className="hand text-[clamp(80px,19vw,228px)] leading-[0.85]">{contact.title}</h2>
         <Message text={contact.note} />
         <a href={`mailto:${profile.email}`} className="mt-6 inline-block text-[clamp(18px,2.2vw,26px)] font-semibold tracking-[-0.02em] [overflow-wrap:anywhere]">
           {profile.email}

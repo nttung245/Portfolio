@@ -1,6 +1,8 @@
 @theme {
   /* One family (ADR 0005): San Francisco on Apple devices, Inter (self-hosted) everywhere else. */
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Hand: each Hero's display line is handwritten (ADR 0006). */
+  --font-hand: "Caveat Variable", "Bradley Hand", "Segoe Print", cursive;
 
   /* One Ink on every Sky, as in Weather, and one Accent: sunlight. */
   --color-ink: #ffffff;
@@ -52,6 +54,16 @@
     inset 0 1px 0 0 rgb(255 255 255 / 0.2),
     inset 0 0 0 1px rgb(255 255 255 / 0.1),
     0 14px 34px -18px rgb(0 0 0 / 0.35);
+}
+
+/* Hand, for a Hero's display line. Caveat is drawn small on its body, so a line set in it runs
+   about a quarter larger than it would in San Francisco, at its natural spacing: never tracked
+   tight, and without Inter's alternates. */
+@utility hand {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  letter-spacing: 0;
+  font-feature-settings: normal;
 }
 
 /* The small uppercase line above a title, as on App Store Today cards. */

@@ -88,7 +88,7 @@ export function SunriseHero() {
         <SunPath />
       </div>
       <div className="mt-auto">
-        <h2 className="lift text-[clamp(56px,14vw,160px)] font-extrabold leading-[0.9] tracking-[-0.045em] md:text-[clamp(72px,9vw,150px)]">
+        <h2 className="hand lift text-[clamp(72px,18vw,204px)] leading-[0.85] md:text-[clamp(92px,11.5vw,192px)]">
           {roles.map((role) => (
             <span key={role} className="block">
               {role}.

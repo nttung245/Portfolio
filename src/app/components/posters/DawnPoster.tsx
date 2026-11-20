@@ -14,27 +14,27 @@ const figure = new URL("../../../../my_picture/profile-figure.webp", import.meta
 const FOCUS = "50% 40%";
 const words = profile.name.split(" ");
 
-// Types the name in at an even pace; each letter settles in rather than popping.
-function useTyping(start: boolean, total: number) {
+// Writes the name out at an even pace, one letter after another, as a hand would.
+function useWriting(start: boolean, total: number) {
   const reduceMotion = useReducedMotion();
-  const [typed, setTyped] = useState(0);
+  const [written, setWritten] = useState(0);
 
   useEffect(() => {
     if (!start) return;
     if (reduceMotion) {
-      setTyped(total);
+      setWritten(total);
       return;
     }
     let count = 0;
     let timer = window.setTimeout(function tick() {
       count += 1;
-      setTyped(count);
-      if (count < total) timer = window.setTimeout(tick, 78);
+      setWritten(count);
+      if (count < total) timer = window.setTimeout(tick, 90);
     }, 380);
     return () => window.clearTimeout(timer);
   }, [start, total, reduceMotion]);
 
-  return typed;
+  return written;
 }
 
 // Profile's Hero is an iOS Contact Poster: the photo fills the Card and the name stands behind
@@ -42,8 +42,7 @@ function useTyping(start: boolean, total: number) {
 export function DawnHero() {
   const name = useRef<HTMLHeadingElement>(null);
   const start = useOpener(name, 0.2);
-  const letters = words.join("").length;
-  const typed = useTyping(start, letters);
+  const written = useWriting(start, words.join("").length);
   let index = 0;
 
   return (
@@ -67,18 +66,16 @@ export function DawnHero() {
       <h1
         ref={name}
         aria-label={profile.name}
-        className="motif lift absolute inset-x-0 bottom-[58%] z-10 px-4 text-center text-[clamp(64px,19vw,180px)] font-extrabold leading-[0.88] tracking-[-0.045em] md:text-[clamp(96px,11.5vw,210px)]"
+        className="motif hand lift absolute inset-x-0 bottom-[60%] z-10 px-4 text-center text-[clamp(84px,25vw,236px)] leading-[0.8] md:bottom-[58%] md:text-[clamp(124px,15vw,272px)]"
       >
         {words.map((word, wordIndex) => (
           <span key={word} aria-hidden="true" className="block md:inline">
             {wordIndex > 0 && <span className="hidden md:inline"> </span>}
             {[...word].map((letter) => {
               const at = index++;
-              const shown = at < typed;
               return (
-                <span key={at}>
-                  <span className={shown ? "type-letter" : "opacity-0"}>{letter}</span>
-                  {start && at === Math.max(typed - 1, 0) && (typed < letters || at === letters - 1) && <span className="type-caret" />}
+                <span key={at} className={at < written ? "write-letter" : "opacity-0"}>
+                  {letter}
                 </span>
               );
             })}
