@@ -1,194 +1,176 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
+import { AnimatePresence, animate, m, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { slotById } from "../../day";
 import { experiences, headlineStat, type Experience } from "../../content";
-import { Poster, PosterHead } from "../Poster";
-import { Reveal } from "../Reveal";
+import { useOpener } from "../Card";
+import { Chips, Detail, Eyebrow, Hero, Module } from "../Poster";
 
 const slot = slotById.midday;
-const tickerItems = [...new Set(experiences.flatMap((job) => job.tech))];
+const [current, alongside] = experiences;
 
-// Midday borrows from PUMA's "Forever Faster" sequence: heavy italics, paper grain,
-// and choppy motion that steps like hand-drawn animation on twos.
-
-const IMPACT_ANGLES = [-162, -144, -126, -108, -90, -72, -54, -36, -18];
-
-function CountUp({ to, onDone }: { to: number; onDone: () => void }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { amount: 0.6 });
+// An Activity ring, as in Apple Fitness: it closes to the headline share while the number counts
+// up with it, on one curve, so the two never drift apart.
+function Ring({ value, start }: { value: number; start: boolean }) {
   const reduceMotion = useReducedMotion();
-  const done = useRef(onDone);
-  done.current = onDone;
+  const number = useRef<HTMLSpanElement>(null);
+  const progress = useMotionValue(reduceMotion ? value : 0);
+  const length = useTransform(progress, (count) => count / 100);
+  const shown = useTransform(progress, (count) => (count > 0.2 ? 1 : 0));
+  const gradient = useId();
 
   useEffect(() => {
-    const node = ref.current;
-    if (!node || !inView || reduceMotion) return;
+    if (!start) return;
+    const write = (count: number) => {
+      if (number.current) number.current.textContent = String(Math.round(count));
+    };
+    if (reduceMotion) {
+      progress.set(value);
+      write(value);
+      return;
+    }
+    const control = animate(progress, value, { duration: 1.8, ease: [0.16, 1, 0.3, 1], onUpdate: write });
+    return () => control.stop();
+  }, [start, reduceMotion, value, progress]);
 
-    const begin = performance.now();
-    node.textContent = "0";
-    const timer = window.setInterval(() => {
-      const progress = Math.min(1, (performance.now() - begin) / 1100);
-      node.textContent = String(Math.round(to * (1 - (1 - progress) ** 3)));
-      if (progress === 1) {
-        window.clearInterval(timer);
-        done.current();
-      }
-    }, 83);
-    return () => window.clearInterval(timer);
-  }, [inView, reduceMotion, to]);
-
-  return <span ref={ref}>{to}</span>;
-}
-
-// Short dashes that burst out above the number when the count lands.
-function Impact() {
   return (
-    <svg aria-hidden="true" viewBox="-100 -100 200 100" className="impact absolute bottom-[0.6em] left-[0.1em] w-[0.55em] overflow-visible">
-      {IMPACT_ANGLES.map((angle) => {
-        const radians = (angle * Math.PI) / 180;
-        return (
-          <line
-            key={angle}
-            x1={Math.cos(radians) * 46}
-            y1={Math.sin(radians) * 46}
-            x2={Math.cos(radians) * 92}
-            y2={Math.sin(radians) * 92}
-            pathLength={1}
-            className="stroke-accent"
-            strokeWidth="6"
-            strokeLinecap="round"
-          />
-        );
-      })}
-    </svg>
+    <div className="relative aspect-square w-[min(66vw,40vh)] shrink-0 md:w-[min(30vw,50vh)]">
+      <svg aria-hidden="true" viewBox="0 0 200 200" className="absolute inset-0 -rotate-90">
+        <defs>
+          <linearGradient id={gradient} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#FFE58F" />
+            <stop offset="1" stopColor="#FFA93A" />
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="84" fill="none" stroke="rgb(255 255 255 / 0.16)" strokeWidth="20" />
+        <m.circle
+          cx="100"
+          cy="100"
+          r="84"
+          fill="none"
+          stroke={`url(#${gradient})`}
+          strokeWidth="20"
+          strokeLinecap="round"
+          style={{ pathLength: length, opacity: shown }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+        <p className="text-[clamp(52px,15vw,120px)] font-extrabold leading-none tracking-[-0.05em] tabular-nums md:text-[clamp(64px,7vw,128px)]">
+          <span ref={number}>{reduceMotion ? value : 0}</span>
+          <span className="text-[0.5em] tracking-[-0.02em]">%</span>
+        </p>
+        <p className="mt-1 text-subhead font-medium text-ink/75">{headlineStat.unit}</p>
+      </div>
+    </div>
   );
 }
 
-function SlamHeading({ children }: { children: string }) {
-  const ref = useRef<HTMLHeadingElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.5 });
+export function MiddayHero() {
+  const stage = useRef<HTMLDivElement>(null);
+  const start = useOpener(stage, 0.4);
 
   return (
-    <h3
-      ref={ref}
-      className={`slam motif font-display text-[length:min(11vw,9.5rem)] font-black uppercase italic leading-[0.84] [font-stretch:62%] ${
-        inView ? "is-in" : ""
-      }`}
-    >
-      {children}
-    </h3>
+    <Hero slot={slot}>
+      <Eyebrow>Experience</Eyebrow>
+      <div
+        ref={stage}
+        className="flex flex-1 flex-col items-center justify-center gap-8 md:flex-row md:justify-center md:gap-[6vw]"
+      >
+        <Ring value={headlineStat.value} start={start} />
+        <div className="max-w-md text-center md:text-left">
+          <p className="sr-only">{headlineStat.caption}</p>
+          <p aria-hidden="true" className="lift text-[clamp(22px,2.5vw,34px)] font-bold leading-[1.15] tracking-[-0.025em]">
+            {headlineStat.headline}
+          </p>
+          <p className="mt-4 text-body font-medium text-ink/80">
+            {current.role} · {current.company}
+          </p>
+          <p className="mt-0.5 text-subhead text-ink/60">
+            Also {alongside.role} at {alongside.company}
+          </p>
+        </div>
+      </div>
+    </Hero>
   );
 }
-
-const points = "grid gap-x-8 gap-y-5 font-sans text-body md:grid-cols-3";
 
 function Point({ children }: { children: string }) {
-  return <li className="border-l-2 border-accent pl-3">{children}</li>;
+  return (
+    <li className="flex gap-3">
+      <span aria-hidden="true" className="mt-[0.62em] size-1.5 shrink-0 rounded-full bg-accent" />
+      <span>{children}</span>
+    </li>
+  );
 }
 
-function Job({ job }: { job: Experience }) {
+function Job({ job, index }: { job: Experience; index: number }) {
   const [open, setOpen] = useState(false);
   const listId = useId();
 
   return (
-    <article className="mt-14 border-t-2 border-ink pt-4">
-      <SlamHeading>{job.company}</SlamHeading>
-      <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.2em]">
-        {job.role} · {job.period}
-      </p>
-      <Reveal id={listId} className="mt-6">
-        <ul className={points}>
+    <Module index={index}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h3 className="text-[22px] font-bold tracking-[-0.02em]">{job.company}</h3>
+        <p className="text-subhead text-ink/60">{job.period}</p>
+      </div>
+      <p className="mt-0.5 text-body text-ink/75">{job.role}</p>
+
+      <div id={listId} className="mt-5 text-body text-ink/90">
+        <ul className="space-y-3">
           {job.highlights.map((point) => (
             <Point key={point}>{point}</Point>
           ))}
         </ul>
-        {/* The rest unfolds on a spring instead of pushing the page down in one jump. */}
         <AnimatePresence initial={false}>
           {open && (
-            <motion.div
+            <m.div
               key="more"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ type: "spring", bounce: 0, duration: 0.55 }}
+              transition={{ type: "spring", bounce: 0, visualDuration: 0.4 }}
               className="overflow-hidden"
             >
-              <ul className={`${points} pt-5`}>
+              <ul className="space-y-3 pt-3">
                 {job.more.map((point) => (
                   <Point key={point}>{point}</Point>
                 ))}
               </ul>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
-      </Reveal>
+      </div>
+
       {job.more.length > 0 && (
         <button
           type="button"
           aria-expanded={open}
           aria-controls={listId}
           onClick={() => setOpen((value) => !value)}
-          className="press mt-6 inline-flex items-center gap-1.5 rounded-full bg-ink/[0.07] py-2.5 pl-4 pr-3 font-sans text-[14px] font-semibold tracking-[-0.01em] hover:bg-ink/[0.11]"
+          className="press mt-5 inline-flex items-center gap-1.5 rounded-full bg-ink/14 py-2 pl-4 pr-3 text-subhead font-semibold hover:bg-ink/20"
         >
           {open ? "Show less" : `Show ${job.more.length} more`}
           <ChevronDown
             aria-hidden="true"
-            className={`size-4 text-accent transition-transform duration-500 ease-spring ${open ? "rotate-180" : ""}`}
+            className={`size-4 transition-transform duration-500 ease-spring ${open ? "rotate-180" : ""}`}
             strokeWidth={2.6}
           />
         </button>
       )}
-    </article>
+
+      <div className="mt-5 border-t border-ink/12 pt-4">
+        <Chips items={job.tech} />
+      </div>
+    </Module>
   );
 }
 
-function Ticker({ items }: { items: string[] }) {
+export function MiddayDetail() {
   return (
-    <div aria-hidden="true" className="motif -mx-4 mt-16 overflow-hidden bg-ink py-3 sm:-mx-8" style={{ color: slot.sky }}>
-      <div className="ticker-track flex w-max font-display text-3xl font-extrabold uppercase italic [font-stretch:62%] md:text-5xl">
-        {[0, 1].map((copy) =>
-          items.map((item) => (
-            <span key={`${copy}-${item}`} className="flex items-center gap-6 pr-6">
-              {item}
-              <span className="h-2.5 w-2.5 rounded-full bg-accent" />
-            </span>
-          )),
-        )}
-      </div>
-    </div>
-  );
-}
-
-export function MiddayPoster() {
-  const [impacts, setImpacts] = useState(0);
-
-  return (
-    <Poster slot={slot}>
-      <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 z-20" />
-      <PosterHead slot={slot} />
-
-      <div className="mt-16 grid items-end gap-6 md:grid-cols-[auto_minmax(0,24rem)] md:gap-10">
-        <p
-          aria-hidden="true"
-          className="relative font-display text-[length:min(36vw,44vh)] font-black italic leading-[0.78] text-accent tabular-nums [font-stretch:62%]"
-        >
-          {impacts > 0 && <Impact key={impacts} />}
-          <CountUp to={headlineStat.value} onDone={() => setImpacts((count) => count + 1)} />%
-        </p>
-        <Reveal className="font-sans text-body md:text-[17px]">
-          <p>
-            <span className="sr-only">{headlineStat.value}%: </span>
-            {headlineStat.caption}
-          </p>
-        </Reveal>
-      </div>
-
-      {experiences.map((job) => (
-        <Job key={job.company} job={job} />
+    <Detail>
+      {experiences.map((job, index) => (
+        <Job key={job.company} job={job} index={index} />
       ))}
-
-      <Ticker items={tickerItems} />
-    </Poster>
+    </Detail>
   );
 }

@@ -1,65 +1,66 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { useInView, useReducedMotion } from "motion/react";
-import { ArrowUpRight, Play } from "lucide-react";
+import { useReducedMotion } from "motion/react";
+import { ArrowUpRight, Hammer, Moon, Play, Sun } from "lucide-react";
 import { slotById } from "../../day";
 import { playground, playgroundWorlds, type PlaygroundWorld } from "../../content";
-import { Poster, PosterHead } from "../Poster";
-import { Reveal } from "../Reveal";
+import { Detail, Eyebrow, Hero, Module } from "../Poster";
 
 const slot = slotById.afternoon;
-const lineTag = "glass-dark absolute top-3 rounded-full px-2.5 py-1 font-sans text-[11px] font-semibold leading-none";
+const tag = "glass-dark absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[13px] font-semibold";
 
-// Afternoon's Motif is nightfall: a terminator line sweeps each world from its day render to
-// its night one and back, the same day the visitor scrolls through. The static frame holds the
-// line at the centre, so both renders still show. It plays until the live world is ready.
-function Nightfall({ world, delay }: { world: PlaygroundWorld; delay: number }) {
+// Playground's Motif: each world drifts from its day render into its night one and back, the
+// worlds a few seconds apart. Without motion they rest by day.
+function DayNight({ world, index }: { world: PlaygroundWorld; index: number }) {
   return (
-    <div className="nightfall motif absolute inset-0" style={{ "--nightfall-delay": `${delay}s` } as CSSProperties}>
-      <img
-        src={world.day}
-        alt={world.dayAlt}
-        width={1440}
-        height={900}
-        loading="lazy"
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
+    <figure
+      className="motif relative aspect-[8/5] overflow-hidden rounded-[22px] shadow-[0_24px_48px_-24px_rgb(0_0_0/0.55)]"
+      style={{ "--offset": `${-index * 4}s` } as CSSProperties}
+    >
+      <img src={world.day} alt={world.dayAlt} width={1440} height={900} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
       <img
         src={world.night}
-        alt={world.nightAlt}
+        alt=""
         width={1440}
         height={900}
         loading="lazy"
         decoding="async"
-        className="nightfall-night absolute inset-0 h-full w-full object-cover"
+        className="daynight-night absolute inset-0 h-full w-full object-cover"
       />
-      <div
-        aria-hidden="true"
-        className="nightfall-line absolute inset-y-0 w-0.5 -translate-x-1/2 shadow-[0_0_12px_2px_rgb(242_196_107/0.55)]"
-        style={{ background: slot.sky }}
-      >
-        <span className={`right-full mr-2 ${lineTag}`}>Day</span>
-        <span className={`left-full ml-2 ${lineTag}`}>Night</span>
-      </div>
-    </div>
+      <figcaption className={tag}>
+        <span aria-hidden="true" className="relative size-3.5">
+          <Sun className="daynight-day absolute inset-0 size-3.5" strokeWidth={2.4} />
+          <Moon className="daynight-night absolute inset-0 size-3.5" strokeWidth={2.4} />
+        </span>
+        {world.name}
+      </figcaption>
+    </figure>
   );
 }
 
-// Controls over a world are smoked glass, as on the iOS camera.
-const tag = "glass-dark absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-full px-3.5 py-2 font-sans text-[13px] font-semibold tracking-[-0.01em]";
+export function AfternoonHero() {
+  return (
+    <Hero slot={slot}>
+      <Eyebrow>Playground</Eyebrow>
+      <h2 className="lift mt-4 text-[clamp(44px,8vw,112px)] font-extrabold leading-[0.92] tracking-[-0.045em]">{playground.title}</h2>
+      <div className="mt-auto grid gap-3 sm:grid-cols-2 sm:gap-4">
+        {playgroundWorlds.map((world, index) => (
+          <DayNight key={world.name} world={world} index={index} />
+        ))}
+      </div>
+    </Hero>
+  );
+}
 
-// The world itself, running in Agent Arena's embed mode. On desktop it loads as it nears the
-// screen; on touch screens and under reduced motion it waits for a tap, and on touch screens an
-// overlay keeps the page scrolling instead of turning the camera.
-function LiveWorld({ world, delay }: { world: PlaygroundWorld; delay: number }) {
-  const ref = useRef<HTMLDivElement>(null);
+// The world running in Agent Arena's embed mode. The Detail only exists while Playground is open,
+// so a world only ever runs then: on desktop at once, on touch screens and under reduced motion
+// after a tap. On touch screens an overlay keeps the Poster scrolling instead of turning the camera.
+function LiveWorld({ world }: { world: PlaygroundWorld }) {
   const frame = useRef<HTMLIFrameElement>(null);
-  const near = useInView(ref, { once: true, margin: "0px 0px 400px 0px" });
   const reduceMotion = useReducedMotion();
   const [autoplay] = useState(() => window.matchMedia("(pointer: fine)").matches);
   const [requested, setRequested] = useState(false);
   const [ready, setReady] = useState(false);
-  const load = requested || (near && autoplay && !reduceMotion);
+  const load = requested || (autoplay && !reduceMotion);
 
   useEffect(() => {
     if (!load) return;
@@ -73,102 +74,85 @@ function LiveWorld({ world, delay }: { world: PlaygroundWorld; delay: number }) 
   }, [load, world.live]);
 
   return (
-    <div
-      ref={ref}
-      className="relative isolate mt-5 aspect-[8/5] overflow-hidden rounded-[28px] bg-ink shadow-[0_32px_64px_-32px_rgb(30_20_6/0.6)] ring-1 ring-ink/10"
-    >
-      <Nightfall world={world} delay={delay} />
+    <div className="relative isolate mt-4 aspect-[8/5] overflow-hidden rounded-[18px] bg-black/30">
+      <img src={world.day} alt={world.dayAlt} width={1440} height={900} decoding="async" className="absolute inset-0 h-full w-full object-cover" />
       {load && (
         <iframe
           ref={frame}
           src={world.live}
           title={`${world.name}, running live in Agent Arena`}
-          className={`absolute inset-0 h-full w-full border-0 transition-opacity duration-700 ${
-            ready ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
+          className={`absolute inset-0 h-full w-full border-0 transition-opacity duration-700 ${ready ? "opacity-100" : "pointer-events-none opacity-0"}`}
         />
       )}
       {ready && <div aria-hidden="true" className="absolute inset-0 hidden pointer-coarse:block" />}
       {ready ? (
         <span className={`pointer-events-none ${tag}`}>
-          <span className="relative flex size-2">
-            <span className="absolute inset-0 animate-ping rounded-full bg-[#34C759] opacity-60 motion-reduce:hidden" />
-            <span className="relative size-2 rounded-full bg-[#34C759]" />
-          </span>
+          <span className="size-2 rounded-full bg-[#34C759]" />
           Live
         </span>
-      ) : (
-        !load && (
-          <button type="button" onClick={() => setRequested(true)} className={`press hover:bg-[rgb(18_18_22/0.6)] ${tag}`}>
-            <Play aria-hidden="true" className="size-3.5 fill-current" strokeWidth={0} />
-            Run live
-          </button>
-        )
-      )}
-      {load && !ready && (
+      ) : load ? (
         <span className={`pointer-events-none ${tag}`}>
           <span aria-hidden="true" className="size-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white motion-reduce:animate-none" />
           Loading live world…
         </span>
+      ) : (
+        <button type="button" onClick={() => setRequested(true)} className={`press ${tag}`}>
+          <Play aria-hidden="true" className="size-3.5 fill-current" strokeWidth={0} />
+          Run live
+        </button>
       )}
     </div>
   );
 }
 
-function World({ world, delay, index }: { world: PlaygroundWorld; delay: number; index: number }) {
+// A world's facts ("135 props") as small Weather-style tiles: the number large, the unit below.
+function Stats({ facts }: { facts: string[] }) {
   return (
-    <Reveal delay={index * 0.12} className="border-t-2 border-ink pt-4">
-      <h3 className="font-display text-[length:min(17vw,7rem)] font-black uppercase leading-[0.82] [font-stretch:62%] md:text-[length:min(7.6vw,8.5rem)]">
-        {world.name}
-      </h3>
-      <LiveWorld world={world} delay={delay} />
-      <p className="mt-5 font-sans text-body">{world.blurb}</p>
-      <ul className="mt-4 flex flex-wrap gap-2 font-mono text-[11px] uppercase tracking-[0.16em]">
-        {world.facts.map((fact) => (
-          <li key={fact} className="flex items-center gap-2 rounded-full bg-ink/[0.08] px-3 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            {fact}
+    <ul className="grid grid-cols-3 gap-2">
+      {facts.map((fact) => {
+        const [, count = fact, unit = ""] = fact.match(/^(\d+)\s+(.*)$/) ?? [];
+        return (
+          <li key={fact} className="rounded-2xl bg-ink/10 px-3.5 py-3">
+            <p className="text-[26px] font-bold leading-none tracking-[-0.02em] tabular-nums">{count}</p>
+            <p className="mt-1.5 text-subhead text-ink/65">{unit}</p>
           </li>
-        ))}
-      </ul>
-    </Reveal>
+        );
+      })}
+    </ul>
   );
 }
 
-export function AfternoonPoster() {
+export function AfternoonDetail() {
   return (
-    <Poster slot={slot}>
-      <PosterHead slot={slot} />
-
-      <Reveal className="mt-10 max-w-2xl font-sans text-body md:text-[17px]">
-        <p>{playground.intro}</p>
-        <a
-          href={playground.project.href}
-          target="_blank"
-          rel="noreferrer"
-          className="press mt-5 inline-flex items-center gap-1.5 rounded-full bg-ink py-2.5 pl-4 pr-3.5 text-[15px] font-semibold tracking-[-0.01em] hover:opacity-85"
-          style={{ color: slot.sky }}
-        >
-          {playground.project.label}
-          <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={2.4} />
-        </a>
-      </Reveal>
-
-      <div className="mt-12 grid gap-14 md:grid-cols-2 md:gap-10">
-        {/* Later worlds start first, so the line crosses the row from right to left. */}
-        {playgroundWorlds.map((world, index) => (
-          <World key={world.name} world={world} index={index} delay={(playgroundWorlds.length - 1 - index) * 0.9} />
-        ))}
-      </div>
-
-      <div className="mt-14 flex flex-col gap-3 border-t border-ink/25 pt-5 md:flex-row md:items-start md:justify-between md:gap-10">
-        <p className="max-w-xl font-sans text-subhead">{playground.craft}</p>
-        <ul className="font-mono text-[11px] uppercase leading-5 tracking-[0.2em] opacity-75 md:text-right">
+    <Detail>
+      {playgroundWorlds.map((world, index) => (
+        <Module key={world.name} index={index}>
+          <h3 className="text-[22px] font-bold tracking-[-0.02em]">{world.name}</h3>
+          <LiveWorld world={world} />
+          <p className="mt-4 text-body text-ink/90">{world.blurb}</p>
+          <div className="mt-4">
+            <Stats facts={world.facts} />
+          </div>
+        </Module>
+      ))}
+      <Module title="How they're made" icon={Hammer} index={playgroundWorlds.length}>
+        <p className="text-body text-ink/90">{playground.intro}</p>
+        <p className="mt-3 text-body text-ink/90">{playground.craft}</p>
+        <ul className="mt-4 space-y-1 text-subhead text-ink/60">
           {playground.credits.map((line) => (
             <li key={line}>{line}</li>
           ))}
         </ul>
-      </div>
-    </Poster>
+        <a
+          href={playground.project.href}
+          target="_blank"
+          rel="noreferrer"
+          className="press mt-5 inline-flex items-center gap-1.5 rounded-full bg-ink py-2.5 pl-4 pr-3.5 text-[15px] font-semibold text-[#14243d] hover:bg-ink/90"
+        >
+          {playground.project.label}
+          <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={2.4} />
+        </a>
+      </Module>
+    </Detail>
   );
 }

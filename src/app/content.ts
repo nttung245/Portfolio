@@ -15,8 +15,23 @@ export const objective = [
   "Comfortable with system design, data flows, and deployment practices. Seeking software or AI engineering roles where I can deliver production-ready features and measurable impact.",
 ];
 
+// What the objective names as its focus, as chips in the Objective Detail.
+export const objectiveFocus = [
+  "Software engineering",
+  "Applied AI",
+  "Reliable services",
+  "API integration",
+  "LLM workflow automation",
+  "System design",
+  "Data flows",
+  "Deployment",
+];
+
 export const headlineStat = {
   value: 48,
+  // On the Experience Card, under the ring.
+  unit: "of daily orders",
+  headline: "Automated by the AI design pipeline I built and deployed at Hilab.",
   caption:
     "Roughly this share of Hilab's daily business orders is now automated by the AI design-personalization pipeline I built and deployed.",
 };
@@ -80,8 +95,9 @@ export type PlaygroundWorld = {
 const arena = "https://nttung245.github.io/agent-arena/";
 
 export const playground = {
+  title: "Worlds for AI agents",
   intro:
-    "Worlds I built for Agent Arena, an open-source playground where LLM agents live on a 3D map and chat. Each one is a single map file on a CC0 model kit I adapted, with its own light, props, and named places the agents can talk about. Both run live below: drag to look around.",
+    "Worlds I built for Agent Arena, an open-source playground where LLM agents live on a 3D map and chat. Each one is a single map file on a CC0 model kit I adapted, with its own light, props, and named places the agents can talk about. Both run live above: drag to look around.",
   project: { label: "Agent Arena", href: "https://github.com/nttung245/agent-arena" },
   craft:
     "Baked glow maps into the models so jack-o'-lanterns and the greenhouse light up at night, and gave each kit one shared scale so modular pieces keep their true proportions.",
@@ -158,3 +174,8 @@ export const composeLinks = [
     href: composeUrl("https://outlook.live.com/mail/0/deeplink/compose", { to: profile.email, subject }),
   },
 ];
+
+export const contact = {
+  title: "Let's talk.",
+  note: "Seeking software or AI engineering roles where I can ship production-ready features.",
+};

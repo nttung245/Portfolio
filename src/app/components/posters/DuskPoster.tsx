@@ -1,175 +1,95 @@
-import type { CSSProperties } from "react";
-import { Award } from "lucide-react";
+import { useRef } from "react";
+import { m, useReducedMotion } from "motion/react";
+import { Award, CalendarRange, Gauge, GraduationCap } from "lucide-react";
 import { slotById } from "../../day";
 import { certifications, education } from "../../content";
-import { seeded } from "../../random";
-import { Poster, PosterHead } from "../Poster";
-import { Reveal } from "../Reveal";
-import { StarField } from "../StarField";
+import { useOpener } from "../Card";
+import { Detail, Eyebrow, Hero, Module, Row, Stars } from "../Poster";
 
 const slot = slotById.dusk;
-const RADIUS = 238;
-const ringText = `${certifications.map((cert) => cert.ring).join("  ✦  ")}  ✦  `;
-
-// Twilight's Sky, so the city silhouette runs straight into the next Poster.
-const NIGHT = "#0B1020";
-
-// A coastal city at dusk: a hill with a mast on the left, the city and one tall tower to the right.
-const city = (() => {
-  const random = seeded(19);
-  const buildings: Array<{ x: number; width: number; height: number }> = [];
-  for (let x = 430; x < 1440; ) {
-    const width = 16 + random() * 34;
-    buildings.push({ x, width, height: 34 + random() * 96 });
-    x += width + random() * 5;
-  }
-  buildings.push({ x: 948, width: 44, height: 182 });
-
-  const windows = buildings.flatMap(({ x, width, height }) =>
-    Array.from({ length: Math.round((width * height) / 700) }, () => ({
-      x: x + 3 + random() * (width - 9),
-      y: 260 - height + 6 + random() * (height - 14),
-      warm: random() < 0.72,
-      delay: random() * 6,
-      duration: 1.4 + random() * 4,
-    })),
-  );
-  const hillLights = [60, 104, 150, 205, 252, 300, 348, 396, 446, 500].map((x) => ({
-    x,
-    y: 96 + ((x - 40) / 520) * 112 + 8 + random() * 16,
-    delay: random() * 6,
-  }));
-  return { buildings, windows, hillLights };
+const [first, last] = education.period.split(/\D+/).filter(Boolean).map(Number);
+// Where today falls between the first and the last year of the degree.
+const now = (() => {
+  const start = new Date(first, 0, 1).getTime();
+  const end = new Date(last + 1, 0, 1).getTime();
+  return Math.min(Math.max((Date.now() - start) / (end - start), 0), 1);
 })();
 
-function Skyline() {
+// Education's Motif, after the Weather app's ten-day bars: the years of the degree as one range,
+// filling in to today.
+function Years() {
+  const bar = useRef<HTMLDivElement>(null);
+  const start = useOpener(bar, 0.5);
+  const reduceMotion = useReducedMotion();
+  const shown = start || reduceMotion;
+  const spring = { type: "spring", visualDuration: 1.1, bounce: 0.08, delay: 0.2 } as const;
+
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 1440 260"
-      preserveAspectRatio="xMidYMax slice"
-      className="motif absolute inset-x-0 bottom-0 h-[clamp(150px,22vw,300px)] w-full"
-    >
-      <g fill={NIGHT}>
-        <path d="M0,96 C110,70 230,78 330,118 C410,150 470,186 560,214 L560,260 L0,260 Z" />
-        {city.buildings.map((building, index) => (
-          <rect key={index} x={building.x} y={260 - building.height} width={building.width} height={building.height} />
-        ))}
-        <rect x="0" y="236" width="1440" height="24" />
-      </g>
-      <line x1="166" y1="82" x2="166" y2="34" stroke={NIGHT} strokeWidth="3" />
-      <circle cx="166" cy="32" r="3.5" fill="#FF4A3D" className="beacon" />
-      {city.windows.map((light, index) => (
-        <rect
-          key={index}
-          x={light.x}
-          y={light.y}
-          width="3"
-          height="4"
-          fill={light.warm ? "#FFD38A" : "#CFE3FF"}
-          className="twinkle"
-          style={{ "--d": light.delay, "--t": light.duration } as CSSProperties}
-        />
-      ))}
-      {city.hillLights.map((light, index) => (
-        <circle
-          key={index}
-          cx={light.x}
-          cy={light.y}
-          r="1.8"
-          fill="#FFD38A"
-          className="twinkle"
-          style={{ "--d": light.delay, "--t": 3 } as CSSProperties}
-        />
-      ))}
-    </svg>
+    <div ref={bar} className="module px-5 pb-4 pt-8">
+      <div className="flex items-center gap-4 text-body font-semibold tabular-nums">
+        <span className="text-ink/60">{first}</span>
+        <div className="relative h-1.5 flex-1 rounded-full bg-ink/18">
+          <m.div
+            className="absolute inset-y-0 left-0 w-full origin-left rounded-full bg-linear-to-r from-[#9AA8FF] to-[#FF9C8A]"
+            initial={false}
+            animate={{ scaleX: shown ? now : 0 }}
+            transition={spring}
+          />
+          <m.span
+            className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink shadow-[0_0_0_3px_rgb(16_20_52/0.6)]"
+            initial={false}
+            animate={{ left: shown ? `${now * 100}%` : "0%", opacity: shown ? 1 : 0 }}
+            transition={spring}
+          >
+            <span className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 text-[12px] font-semibold uppercase tracking-[0.06em] text-ink/75">
+              Now
+            </span>
+          </m.span>
+        </div>
+        <span>{last}</span>
+      </div>
+    </div>
   );
 }
 
-export function DuskPoster() {
+export function DuskHero() {
   return (
-    <Poster slot={slot}>
-      <StarField
-        seed={23}
-        count={34}
-        className="inset-x-0 top-0 -z-10 h-[55%] [mask-image:linear-gradient(to_bottom,black_40%,transparent)]"
-      />
-      {/* The evening star, first light of the night. */}
-      <span
-        aria-hidden="true"
-        className="twinkle absolute left-[62%] top-[8%] -z-10 h-[5px] w-[5px] rounded-full bg-[#FFF6E0] shadow-[0_0_8px_3px_rgb(255_246_224/0.55),0_0_22px_8px_rgb(255_214_170/0.22)]"
-        style={{ "--d": 0, "--t": 4 } as CSSProperties}
-      />
-
-      <PosterHead slot={slot} />
-
-      <div className="mt-10 grid items-center gap-12 md:grid-cols-2">
-        <div className="relative mx-auto aspect-square w-full max-w-[min(86vw,58vh)]">
-          <svg aria-hidden="true" viewBox="0 0 600 600" className="motif absolute inset-0 h-full w-full">
-            <defs>
-              <path
-                id="dusk-ring"
-                d={`M 300,300 m -${RADIUS},0 a ${RADIUS},${RADIUS} 0 1,1 ${RADIUS * 2},0 a ${RADIUS},${RADIUS} 0 1,1 -${RADIUS * 2},0`}
-              />
-            </defs>
-            <g className="orbit" style={{ transformOrigin: "300px 300px" }}>
-              <text className="fill-current font-mono text-[15px] uppercase tracking-[0.1em]">
-                <textPath href="#dusk-ring" textLength={2 * Math.PI * RADIUS} lengthAdjust="spacing">
-                  {ringText}
-                </textPath>
-              </text>
-            </g>
-            <circle cx="300" cy="300" r="204" className="fill-none stroke-accent" strokeWidth="1.5" />
-          </svg>
-          <p
-            aria-hidden="true"
-            className="absolute inset-0 flex items-center justify-center font-display text-[length:min(21vw,14vh)] font-black leading-none [font-stretch:112%]"
-          >
-            {education.short}
-          </p>
+    <Hero slot={slot}>
+      <Stars seed={23} count={44} className="inset-x-0 top-0 -z-10 h-[60%]" />
+      <Eyebrow>Education</Eyebrow>
+      <div className="mt-auto">
+        <h2 aria-label={education.school} className="text-[clamp(120px,36vw,300px)] font-extrabold leading-[0.82] tracking-[-0.06em] md:text-[clamp(140px,20vw,300px)]">
+          {education.short}
+        </h2>
+        <p className="mt-4 max-w-xl text-[clamp(20px,2vw,26px)] font-semibold leading-tight tracking-[-0.02em]">{education.school}</p>
+        <p className="mt-1.5 text-body text-ink/75">
+          {education.degree} · GPA {education.gpa}
+        </p>
+        <div className="mt-6 max-w-xl">
+          <Years />
         </div>
-
-        <Reveal className="flex flex-col gap-10">
-          <div>
-            <h3 className="font-display text-3xl font-bold leading-tight [font-stretch:88%] md:text-5xl">
-              {education.school}
-            </h3>
-            <p className="mt-4 font-sans text-body md:text-[17px]">{education.degree}</p>
-            <p className="mt-1 font-mono text-[12px] uppercase tracking-[0.2em] opacity-75">
-              {education.period} · GPA {education.gpa}
-            </p>
-          </div>
-          <div>
-            <h3 className="px-4 font-mono text-[11px] uppercase tracking-[0.2em] opacity-75">Certifications</h3>
-            {/* An inset grouped list, as in iOS Settings. */}
-            <ul className="mt-3 overflow-hidden rounded-[22px] bg-ink/[0.07] font-sans text-body shadow-[inset_0_0_0_1px_rgb(241_230_247/0.08)]">
-              {certifications.map((cert) => (
-                <li key={cert.name} className="flex items-center gap-3 pl-3">
-                  <span className="grid size-[30px] shrink-0 place-items-center rounded-[8px] bg-accent" style={{ color: slot.sky }}>
-                    <Award aria-hidden="true" className="size-[17px]" strokeWidth={2.2} />
-                  </span>
-                  <span className="flex min-w-0 flex-1 items-center justify-between gap-4 border-ink/12 py-3.5 pr-4 [li+li_&]:border-t">
-                    <span>{cert.name}</span>
-                    <span className="shrink-0 text-subhead tabular-nums opacity-60">{cert.year}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Reveal>
       </div>
+    </Hero>
+  );
+}
 
-      {/* The afterglow sits on the horizon, under the content, with the city in front of it. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none relative -mx-4 -mb-28 mt-16 h-[clamp(280px,50vh,540px)] sm:-mx-8"
-        style={{
-          background:
-            "linear-gradient(to bottom, transparent 0%, rgb(108 72 124 / 0.5) 28%, rgb(196 96 108 / 0.82) 55%, #EE7038 76%, #D2481E 92%)",
-        }}
-      >
-        <Skyline />
-      </div>
-    </Poster>
+export function DuskDetail() {
+  return (
+    <Detail>
+      <Module title="Degree" icon={GraduationCap} index={0}>
+        <ul>
+          <Row icon={GraduationCap} label="Programme" value={education.degree} />
+          <Row icon={CalendarRange} label="Years" value={education.period} />
+          <Row icon={Gauge} label="GPA" value={education.gpa} />
+        </ul>
+      </Module>
+      <Module title="Certifications" icon={Award} index={1}>
+        <ul>
+          {certifications.map((cert) => (
+            <Row key={cert.name} icon={Award} label={cert.name} value={cert.year} />
+          ))}
+        </ul>
+      </Module>
+    </Detail>
   );
 }
