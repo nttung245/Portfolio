@@ -58,7 +58,7 @@ export function DuskHero() {
       <Stars seed={23} count={44} className="inset-x-0 top-0 -z-10 h-[60%]" />
       <Eyebrow>Education</Eyebrow>
       <div className="mt-auto">
-        <h2 aria-label={education.school} className="text-[clamp(120px,36vw,300px)] font-extrabold leading-[0.82] tracking-[-0.06em] md:text-[clamp(140px,20vw,300px)]">
+        <h2 aria-label={education.school} className="hand text-[clamp(150px,44vw,380px)] leading-[0.8] md:text-[clamp(176px,25vw,380px)]">
           {education.short}
         </h2>
         <p className="mt-4 max-w-xl text-[clamp(20px,2vw,26px)] font-semibold leading-tight tracking-[-0.02em]">{education.school}</p>

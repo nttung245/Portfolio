@@ -126,7 +126,7 @@ export function Frame({ active, clock, progress, open, onSelect, onClose }: Fram
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="press lift pointer-events-auto text-[15px] font-semibold tracking-[-0.01em]"
+              className="hand press lift pointer-events-auto text-[23px] leading-none"
             >
               {profile.name}
             </m.a>

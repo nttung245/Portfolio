@@ -79,7 +79,7 @@ export function MiddayHero() {
         <Ring value={headlineStat.value} start={start} />
         <div className="max-w-md text-center md:text-left">
           <p className="sr-only">{headlineStat.caption}</p>
-          <p aria-hidden="true" className="lift text-[clamp(22px,2.5vw,34px)] font-bold leading-[1.15] tracking-[-0.025em]">
+          <p aria-hidden="true" className="hand lift text-[clamp(30px,3.3vw,46px)] leading-[1.05]">
             {headlineStat.headline}
           </p>
           <p className="mt-4 text-body font-medium text-ink/80">

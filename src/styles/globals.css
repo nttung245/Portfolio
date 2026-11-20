@@ -16,43 +16,20 @@
   }
 }
 
-/* Profile: each letter of the name settles in as it is typed, and the caret breathes rather than
-   blinks. */
-.type-letter {
+/* Profile: each letter of the name is drawn in from left to right, as a pen moves, the next one
+   starting before the last is done. The clip reaches past the letter's box so Caveat's loops and
+   tails are never cut, and it lifts once the letter is drawn. */
+.write-letter {
   display: inline-block;
-  animation: letter-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: write-in 0.36s cubic-bezier(0.33, 1, 0.68, 1) backwards;
 }
 
-@keyframes letter-in {
+@keyframes write-in {
   from {
-    opacity: 0;
-    transform: translateY(0.12em);
+    clip-path: inset(-0.6em calc(100% + 0.6em) -0.6em -0.6em);
   }
-}
-
-/* The caret takes no width, so typing never shifts the centred name. */
-.type-caret {
-  position: relative;
-  display: inline-block;
-  width: 0;
-  height: 0.74em;
-}
-
-.type-caret::after {
-  content: "";
-  position: absolute;
-  bottom: -0.02em;
-  left: 0.03em;
-  width: 0.055em;
-  height: 100%;
-  border-radius: 1em;
-  background: var(--color-accent);
-  animation: caret 1.2s ease-in-out infinite;
-}
-
-@keyframes caret {
-  50% {
-    opacity: 0.15;
+  to {
+    clip-path: inset(-0.6em -0.6em -0.6em -0.6em);
   }
 }
 

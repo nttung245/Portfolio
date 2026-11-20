@@ -243,7 +243,7 @@ export function DayPage() {
     };
   }, [centre]);
 
-  // On a first visit, once the name has typed in, the row leans left and springs back to show it moves.
+  // On a first visit, once the name has been written out, the row leans left and springs back to show it moves.
   useEffect(() => {
     let seen = true;
     try {

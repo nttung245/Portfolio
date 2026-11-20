@@ -20,7 +20,7 @@ export function SunsetHero() {
     <Hero slot={slot}>
       <Eyebrow>Skills</Eyebrow>
       <div className="mt-auto">
-        <ul ref={list} className="lift text-[clamp(46px,10.5vw,124px)] font-extrabold leading-[0.96] tracking-[-0.045em]">
+        <ul ref={list} className="hand lift text-[clamp(58px,min(13.5vw,12svh),150px)] leading-[0.92]">
           {skillGroups.map((group, index) => (
             <li key={group.name} className="-mb-[0.08em] overflow-hidden pb-[0.08em]">
               <m.span
@@ -30,7 +30,7 @@ export function SunsetHero() {
                 transition={{ type: "spring", visualDuration: 0.7, bounce: 0.1, delay: 0.09 * index }}
               >
                 {group.name}
-                <sup className="ml-2 align-super text-[0.26em] font-semibold tracking-normal text-ink/60">{group.items.length}</sup>
+                <sup className="ml-2 align-super font-sans text-[0.2em] font-semibold text-ink/60">{group.items.length}</sup>
               </m.span>
             </li>
           ))}
