@@ -37,7 +37,7 @@ The Time slot at the peak of the day, between Sunrise and Afternoon.
 _Avoid_: middle day, noon
 
 **Sky**:
-The soft gradient of a Time slot, with its glow (sun, horizon or moon), in the style of the iOS Weather app.
+The soft gradient of a Time slot, with its sun and moon glows, in the style of the iOS Weather app. Every Sky has the same shape, so two Skies blend into each other mid-swipe.
 _Avoid_: theme, background colour
 
 **Ambient light**:
