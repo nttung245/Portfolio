@@ -54,7 +54,7 @@ export function DawnPoster() {
       />
       <StaticNoise on={done} />
 
-      <PosterHead slot={slot} title={profile.coordinates} heading={false} />
+      <PosterHead slot={slot} detail={profile.coordinates} heading={false} />
 
       <h1
         ref={nameRef}

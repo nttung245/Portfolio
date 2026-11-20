@@ -14,14 +14,14 @@ If `bun run dev` exits with `ENOSPC`, the machine has run out of inotify watcher
 
 ## Design language
 
-The site is "A Day in Type": seven kinetic-type Posters that run from Dawn to Twilight as the visitor scrolls, after Sara Benoist's Olympic Series posters, with Midday borrowing from Mat Voyce's PUMA "Forever Faster" sequence. `GLOSSARY.md` defines the vocabulary (Poster, Motif, Time slot, Topic, Sky, Ink, Accent, Frame, Day clock, Timeline); use those words in code and conversation. `docs/adr/` records decisions that are easy to undo by accident: Posters loop on their own instead of scroll-jacking, and the day cycle replaces a light/dark toggle.
+The site is "A Day in Type": seven kinetic-type Posters that run from Dawn to Twilight as the visitor scrolls, after Sara Benoist's Olympic Series posters, with Midday borrowing from Mat Voyce's PUMA "Forever Faster" sequence. `GLOSSARY.md` defines the vocabulary (Poster, Motif, Time slot, Topic, Sky, Ink, Accent, Frame, Day clock, Timeline); use those words in code and conversation. `docs/adr/` records decisions that are easy to undo by accident: Posters loop on their own instead of scroll-jacking, the day cycle replaces a light/dark toggle, and iOS styling stays in the Frame, controls and reading text while the Posters keep their poster type and Motifs.
 
 ## Architecture
 
 **One page.** `routes.tsx` has a single `Root` layout, which only adds `MotionConfig reducedMotion="user"`, with `DayPage` as its index route. Paths from older versions of the site (`/about`, `/experience`, `/contact`, …) redirect to the matching Poster's hash, and old hashes (`#about`, `#experience`, …) are mapped through `legacyHashes` in `day.ts`. Unknown paths go to `/`. `vercel.json` rewrites every path to `index.html`.
 
 **Data lives in two files.**
-- `src/app/day.ts`: the seven Time slots in order, each with its id, English and Vietnamese labels, Topic, time, and Sky/Ink/Accent colours. The Frame's Poster count (N°04/07) and Timeline columns follow its length.
+- `src/app/day.ts`: the seven Time slots in order, each with its id, Topic, time, and Sky/Ink/Accent colours. Time slots are never named on screen: each Poster is labelled by its Topic only. The Frame's Poster count (N°04/07) and Timeline columns follow its length.
 - `src/app/content.ts`: all portfolio text, including profile and contact links, bio, experience, skills, education and certifications. Edit copy there, not in the Posters.
 
 **`DayPage` owns scrolling.** Its `useDayScroll` hook measures each Poster's top and, on every scroll:
@@ -31,7 +31,13 @@ The site is "A Day in Type": seven kinetic-type Posters that run from Dawn to Tw
 
 It also scrolls to the URL hash on load, and again once the web fonts have reflowed the page.
 
-**Posters.** Each file in `components/posters/` wraps its content in `<Poster slot={…}>` from `Poster.tsx`. That component sets the slot's `--ink` and `--accent` and marks the section `data-live` while it is on screen. `@theme inline` in `theme.css` exposes the variables as Tailwind colours (`text-ink`, `bg-accent`, `bg-sky`, …). The fonts are `font-display` (Archivo variable, roman and italic, `wdth` 62–125, `wght` 100–900) and `font-mono` (JetBrains Mono, also the body font), both loaded by a `<link>` in `index.html`.
+**Posters.** Each file in `components/posters/` wraps its content in `<Poster slot={…}>` from `Poster.tsx`. That component sets the slot's `--ink` and `--accent` and marks the section `data-live` while it is on screen. `@theme inline` in `theme.css` exposes the variables as Tailwind colours (`text-ink`, `bg-accent`, `bg-sky`, …). The fonts are `font-display` (Archivo variable, roman and italic, `wdth` 62–125, `wght` 100–900) for poster type, `font-mono` (JetBrains Mono) for the micro-type labels, and `font-sans` (San Francisco on Apple devices, Inter elsewhere, and the body font) for reading text and controls. Archivo, JetBrains Mono and Inter are loaded by a `<link>` in `index.html`.
+
+**The iOS layer.** The Frame, the controls and the reading text follow iOS (ADR 0003), using tools defined in `theme.css`:
+- `glass` is Liquid Glass tinted with the current Sky, so it reads light at Midday and dark at Twilight. `glass-dark` is smoked glass for controls over a picture. Blur only helps where something passes underneath, so controls on a flat Sky use a tinted fill (`bg-ink/[0.07]`) instead.
+- `press` makes a control sink under the finger and spring back. `ease-spring` and `ease-bounce` are springs sampled into `linear()`. `text-body` and `text-subhead` are the reading sizes.
+- In the Frame, the Day clock sits in a capsule with a day-progress ring. When the visitor reaches a new Poster, the capsule opens like a Live Activity to show its Topic; on phones the name and Poster count fade out while it is open. The Timeline is a floating glass tab bar whose lens slides between Topics (text on desktop, icons on phones), and the Posters blur as they pass under the top and bottom edges.
+- `Reveal` fades copy in once as it scrolls into view. Motifs never use it.
 
 **Motifs.** Every looping animation is a set of keyframes in `src/styles/globals.css` and only runs inside an element with the `motif` class. It pauses while its Poster is off screen and is switched off under `prefers-reduced-motion`, pseudo-elements included, so each Motif's base, non-animated style has to work as a static frame.
 - Dawn types the name in, and Sunset decodes its words through random glyphs. Both then loop a cyberpunk glitch: `.glitch` copies the text from `data-text` into tinted, sliced pseudo-elements (`--glitch-a`/`--glitch-b`) while `StaticNoise` flashes scanlines and grain.

@@ -32,8 +32,14 @@ const role: Variants = {
 };
 
 const paragraph: Variants = {
-  hidden: { opacity: 0, y: 14 },
-  shown: (index: number) => ({ opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE_OUT, delay: 1.5 + index * 0.1 } }),
+  hidden: { opacity: 0, y: 18, filter: "blur(6px)" },
+  shown: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.9, ease: EASE_OUT, delay: 1.5 + index * 0.1 },
+    transitionEnd: { filter: "none" },
+  }),
 };
 
 export function SunrisePoster() {
@@ -97,7 +103,7 @@ export function SunrisePoster() {
           />
         </div>
 
-        <div className="mt-8 grid gap-4 font-mono text-[14px] leading-7 md:grid-cols-2 md:gap-10">
+        <div className="mt-8 grid gap-4 font-sans text-body md:grid-cols-2 md:gap-10 md:text-[17px]">
           {objective.map((line, index) => (
             <motion.p key={line} variants={paragraph} custom={index}>
               {line}

@@ -1,8 +1,10 @@
 import type { CSSProperties } from "react";
+import { Award } from "lucide-react";
 import { slotById } from "../../day";
 import { certifications, education } from "../../content";
 import { seeded } from "../../random";
 import { Poster, PosterHead } from "../Poster";
+import { Reveal } from "../Reveal";
 import { StarField } from "../StarField";
 
 const slot = slotById.dusk;
@@ -127,28 +129,34 @@ export function DuskPoster() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-10 font-mono">
+        <Reveal className="flex flex-col gap-10">
           <div>
             <h3 className="font-display text-3xl font-bold leading-tight [font-stretch:88%] md:text-5xl">
               {education.school}
             </h3>
-            <p className="mt-4 text-[14px]">{education.degree}</p>
-            <p className="mt-1 text-[12px] uppercase tracking-[0.2em] opacity-75">
+            <p className="mt-4 font-sans text-body md:text-[17px]">{education.degree}</p>
+            <p className="mt-1 font-mono text-[12px] uppercase tracking-[0.2em] opacity-75">
               {education.period} · GPA {education.gpa}
             </p>
           </div>
           <div>
-            <h3 className="text-[11px] uppercase tracking-[0.2em] opacity-75">Certifications</h3>
-            <ul className="mt-4 divide-y divide-ink/20 border-y border-ink/20">
+            <h3 className="px-4 font-mono text-[11px] uppercase tracking-[0.2em] opacity-75">Certifications</h3>
+            {/* An inset grouped list, as in iOS Settings. */}
+            <ul className="mt-3 overflow-hidden rounded-[22px] bg-ink/[0.07] font-sans text-body shadow-[inset_0_0_0_1px_rgb(241_230_247/0.08)]">
               {certifications.map((cert) => (
-                <li key={cert.name} className="flex justify-between gap-6 py-3 text-[14px]">
-                  <span>{cert.name}</span>
-                  <span className="shrink-0 tabular-nums text-accent">{cert.year}</span>
+                <li key={cert.name} className="flex items-center gap-3 pl-3">
+                  <span className="grid size-[30px] shrink-0 place-items-center rounded-[8px] bg-accent" style={{ color: slot.sky }}>
+                    <Award aria-hidden="true" className="size-[17px]" strokeWidth={2.2} />
+                  </span>
+                  <span className="flex min-w-0 flex-1 items-center justify-between gap-4 border-ink/12 py-3.5 pr-4 [li+li_&]:border-t">
+                    <span>{cert.name}</span>
+                    <span className="shrink-0 text-subhead tabular-nums opacity-60">{cert.year}</span>
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
-        </div>
+        </Reveal>
       </div>
 
       {/* The afterglow sits on the horizon, under the content, with the city in front of it. */}

@@ -1,8 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { useInView, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
+import { ChevronDown } from "lucide-react";
 import { slotById } from "../../day";
 import { experiences, headlineStat, type Experience } from "../../content";
 import { Poster, PosterHead } from "../Poster";
+import { Reveal } from "../Reveal";
 
 const slot = slotById.midday;
 const tickerItems = [...new Set(experiences.flatMap((job) => job.tech))];
@@ -79,10 +81,15 @@ function SlamHeading({ children }: { children: string }) {
   );
 }
 
+const points = "grid gap-x-8 gap-y-5 font-sans text-body md:grid-cols-3";
+
+function Point({ children }: { children: string }) {
+  return <li className="border-l-2 border-accent pl-3">{children}</li>;
+}
+
 function Job({ job }: { job: Experience }) {
   const [open, setOpen] = useState(false);
   const listId = useId();
-  const points = open ? [...job.highlights, ...job.more] : job.highlights;
 
   return (
     <article className="mt-14 border-t-2 border-ink pt-4">
@@ -90,22 +97,46 @@ function Job({ job }: { job: Experience }) {
       <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.2em]">
         {job.role} · {job.period}
       </p>
-      <ul id={listId} className="mt-6 grid gap-x-8 gap-y-5 font-mono text-[14px] leading-6 md:grid-cols-3">
-        {points.map((point) => (
-          <li key={point} className="border-l-2 border-accent pl-3">
-            {point}
-          </li>
-        ))}
-      </ul>
+      <Reveal id={listId} className="mt-6">
+        <ul className={points}>
+          {job.highlights.map((point) => (
+            <Point key={point}>{point}</Point>
+          ))}
+        </ul>
+        {/* The rest unfolds on a spring instead of pushing the page down in one jump. */}
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              key="more"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ type: "spring", bounce: 0, duration: 0.55 }}
+              className="overflow-hidden"
+            >
+              <ul className={`${points} pt-5`}>
+                {job.more.map((point) => (
+                  <Point key={point}>{point}</Point>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Reveal>
       {job.more.length > 0 && (
         <button
           type="button"
           aria-expanded={open}
           aria-controls={listId}
           onClick={() => setOpen((value) => !value)}
-          className="mt-6 font-mono text-[12px] uppercase tracking-[0.2em] underline decoration-accent decoration-2 underline-offset-[6px]"
+          className="press mt-6 inline-flex items-center gap-1.5 rounded-full bg-ink/[0.07] py-2.5 pl-4 pr-3 font-sans text-[14px] font-semibold tracking-[-0.01em] hover:bg-ink/[0.11]"
         >
           {open ? "Show less" : `Show ${job.more.length} more`}
+          <ChevronDown
+            aria-hidden="true"
+            className={`size-4 text-accent transition-transform duration-500 ease-spring ${open ? "rotate-180" : ""}`}
+            strokeWidth={2.6}
+          />
         </button>
       )}
     </article>
@@ -145,10 +176,12 @@ export function MiddayPoster() {
           {impacts > 0 && <Impact key={impacts} />}
           <CountUp to={headlineStat.value} onDone={() => setImpacts((count) => count + 1)} />%
         </p>
-        <p className="font-mono text-[14px] leading-6">
-          <span className="sr-only">{headlineStat.value}%: </span>
-          {headlineStat.caption}
-        </p>
+        <Reveal className="font-sans text-body md:text-[17px]">
+          <p>
+            <span className="sr-only">{headlineStat.value}%: </span>
+            {headlineStat.caption}
+          </p>
+        </Reveal>
       </div>
 
       {experiences.map((job) => (

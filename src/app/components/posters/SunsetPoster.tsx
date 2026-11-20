@@ -92,10 +92,17 @@ export function SunsetPoster() {
             className="grid items-end gap-x-10 gap-y-2 md:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]"
           >
             <DecodeWord text={group.name} index={index} active={active} />
-            <p className="font-mono text-[13px] leading-6">
-              <span className="sr-only">{group.name}: </span>
-              {group.items.join(" · ")}
-            </p>
+            <ul aria-label={group.name} className="flex flex-wrap gap-1.5 font-sans text-subhead font-medium">
+              {group.items.map((item, itemIndex) => (
+                <li
+                  key={item}
+                  className={`chip rounded-full bg-ink/[0.09] px-3 py-1 shadow-[inset_0_0_0_1px_rgb(31_11_6/0.08)] ${active ? "is-in" : ""}`}
+                  style={{ "--chip-delay": `${0.5 + index * 0.16 + itemIndex * 0.035}s` } as CSSProperties}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
           </li>
         ))}
       </ul>

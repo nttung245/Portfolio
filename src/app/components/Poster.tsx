@@ -17,7 +17,7 @@ export function Poster({ slot, className = "", style, children }: PosterProps) {
     <section
       ref={ref}
       id={slot.id}
-      aria-label={slot.label}
+      aria-label={slot.topic}
       data-live={live ? "" : undefined}
       className={`poster relative isolate flex min-h-svh flex-col overflow-x-clip px-4 pb-28 pt-20 text-ink sm:px-8 ${className}`}
       style={{ "--ink": slot.ink, "--accent": slot.accent, ...style } as CSSProperties}
@@ -29,22 +29,19 @@ export function Poster({ slot, className = "", style, children }: PosterProps) {
 
 type PosterHeadProps = {
   slot: TimeSlot;
-  title?: string;
+  detail?: string;
   heading?: boolean;
 };
 
-// The micro-type row at the top of every Poster: the Time slot on the left, its Topic on the right.
-// The time itself lives in the Frame's Day clock.
-export function PosterHead({ slot, title = slot.topic, heading = true }: PosterHeadProps) {
+// The micro-type row at the top of every Poster: just its Topic, with an optional detail on the right.
+// Time slots are never named on screen; the Sky and the Day clock carry the time of day.
+export function PosterHead({ slot, detail, heading = true }: PosterHeadProps) {
   const Title = heading ? "h2" : "p";
 
   return (
     <header className="flex items-baseline justify-between gap-6 font-mono text-[11px] uppercase tracking-[0.2em]">
-      <p className="flex items-baseline gap-3">
-        <span>{slot.label}</span>
-        <span className="text-[10px] normal-case tracking-[0.04em] opacity-70">{slot.vn}</span>
-      </p>
-      <Title className="text-right">{title}</Title>
+      <Title>{slot.topic}</Title>
+      {detail && <p className="text-right opacity-70">{detail}</p>}
     </header>
   );
 }

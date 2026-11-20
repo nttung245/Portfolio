@@ -455,3 +455,26 @@
   stroke-dasharray: 1;
   animation: star-line 14s cubic-bezier(0.65, 0, 0.35, 1) infinite both;
 }
+
+/* Sunset: the skill chips pop in on a spring after their word has decoded. Without motion they
+   simply stand there. */
+@media (prefers-reduced-motion: no-preference) {
+  .chip {
+    opacity: 0;
+  }
+}
+
+.chip.is-in {
+  animation: chip-in 0.9s var(--ease-bounce) var(--chip-delay, 0s) both;
+}
+
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -13,7 +13,7 @@ The one motion idea a Poster is built around.
 _Avoid_: effect, trick, animation
 
 **Time slot**:
-One of the seven moments of the day that a Poster stands for, in order: Dawn, Sunrise, Midday, Afternoon, Sunset, Dusk, Twilight.
+One of the seven moments of the day that a Poster stands for, in order: Dawn, Sunrise, Midday, Afternoon, Sunset, Dusk, Twilight. Time slots set the Sky and the Day clock but are never named on screen; visitors see only the Topic.
 _Avoid_: mood, theme, chapter
 
 **Midday**:

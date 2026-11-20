@@ -1,7 +1,10 @@
-import type { CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { Check, Copy, Github, Linkedin, Send } from "lucide-react";
 import { slotById } from "../../day";
 import { composeLinks, profile } from "../../content";
 import { Poster, PosterHead } from "../Poster";
+import { Reveal } from "../Reveal";
 
 const slot = slotById.twilight;
 
@@ -37,6 +40,45 @@ const stars: Array<[x: number, y: number, r: number, delay: number]> = [
   [700, 512, 2, 3.1],
 ];
 
+// Copies the address and says so for a moment, the way iOS confirms a copy.
+function CopyEmail() {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 1800);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
+
+  return (
+    <button
+      type="button"
+      onClick={() => navigator.clipboard?.writeText(profile.email).then(() => setCopied(true))}
+      className={`${button} bg-ink/10 hover:bg-ink/15`}
+    >
+      <AnimatePresence initial={false} mode="popLayout">
+        <motion.span
+          key={copied ? "copied" : "copy"}
+          initial={{ opacity: 0, scale: 0.6, filter: "blur(4px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          exit={{ opacity: 0, scale: 0.6, filter: "blur(4px)" }}
+          transition={{ type: "spring", bounce: 0.4, duration: 0.45 }}
+          className="inline-flex items-center gap-2"
+        >
+          {copied ? <Check aria-hidden="true" className="size-4 text-accent" strokeWidth={2.6} /> : <Copy aria-hidden="true" className="size-4" strokeWidth={2.2} />}
+          {copied ? "Copied" : "Copy email"}
+        </motion.span>
+      </AnimatePresence>
+      <span role="status" className="sr-only">
+        {copied ? "Email address copied" : ""}
+      </span>
+    </button>
+  );
+}
+
+const button =
+  "press inline-flex h-11 items-center gap-2 rounded-full px-5 font-sans text-[15px] font-semibold tracking-[-0.01em]";
+
 export function TwilightPoster() {
   return (
     <Poster slot={slot}>
@@ -58,7 +100,7 @@ export function TwilightPoster() {
         ))}
       </svg>
 
-      <div className="mt-auto pt-10">
+      <Reveal className="mt-auto pt-10">
         <p className="font-display text-[length:min(11vw,9rem)] font-thin uppercase leading-[0.9] [font-stretch:125%]">
           Let's talk
         </p>
@@ -68,36 +110,45 @@ export function TwilightPoster() {
         >
           {profile.email}
         </a>
-        <div className="mt-6 flex flex-wrap gap-3 font-mono text-[11px] uppercase tracking-[0.2em]">
-          {composeLinks.map((link) => (
+        <div className="mt-7 flex flex-wrap gap-2.5">
+          {composeLinks.map((link, index) => (
             <a
               key={link.label}
               href={link.href}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-ink/40 px-4 py-2.5 transition-colors hover:border-ink hover:bg-ink hover:text-sky"
+              className={`${button} ${index === 0 ? "bg-accent hover:opacity-90" : "bg-ink/10 hover:bg-ink/15"}`}
+              style={index === 0 ? { color: slot.sky } : undefined}
             >
+              {index === 0 && <Send aria-hidden="true" className="size-4" strokeWidth={2.2} />}
               Compose in {link.label}
             </a>
           ))}
+          <CopyEmail />
         </div>
 
-        <div className="mt-14 flex flex-wrap items-end justify-between gap-6 border-t border-ink/20 pt-5 font-mono text-[11px] uppercase tracking-[0.2em]">
-          <ul className="flex gap-6">
-            <li>
-              <a href={profile.github} target="_blank" rel="noreferrer" className="hover:text-accent">
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href={profile.linkedin} target="_blank" rel="noreferrer" className="hover:text-accent">
-                LinkedIn
-              </a>
-            </li>
+        <div className="mt-14 flex flex-wrap items-center justify-between gap-6 border-t border-ink/15 pt-5">
+          <ul className="flex gap-2">
+            {[
+              { label: "GitHub", href: profile.github, Icon: Github },
+              { label: "LinkedIn", href: profile.linkedin, Icon: Linkedin },
+            ].map(({ label, href, Icon }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="press inline-flex h-10 items-center gap-2 rounded-full bg-ink/[0.07] px-4 font-sans text-[14px] font-medium hover:bg-ink/[0.13]"
+                >
+                  <Icon aria-hidden="true" className="size-4" strokeWidth={2} />
+                  {label}
+                </a>
+              </li>
+            ))}
           </ul>
-          <p className="opacity-70">{profile.location}</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-70">{profile.location}</p>
         </div>
-      </div>
+      </Reveal>
     </Poster>
   );
 }
